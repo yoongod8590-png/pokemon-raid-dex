@@ -5,7 +5,8 @@
 .pokemon-sprite{width:48px;height:48px;object-fit:contain;vertical-align:middle;margin-right:6px}
 .update-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 #rankPanel [hidden]{display:none!important} #rankPanel .pokemon-sprite{width:36px;height:36px}
-</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button></nav><section class="panel" id="rankPanel">
+#counterPanel [hidden]{display:none!important} #counterPanel .pokemon-sprite{width:36px;height:36px}
+</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button><button type="button" class="secondary" id="tabCounter">카운터 검색</button></nav><section class="panel" id="rankPanel">
     <h2>레이드 육성 참고 순위 · 1~500위</h2>
     <p class="note">출시 종의 기본형과 주요 전투 폼을 각각 계산한 중립 상대 기준 참고 순위입니다. 폼별 능력치와 기술이 모두 있는 항목을 계산하며, 폼 자체의 출시 여부는 별도로 검증하지 않습니다. 메가·그림자·자속·상성·보스별 조건은 제외합니다. 전용 그림이 없으면 기본형 그림을 표시합니다. 기술명은 영어이며 일부 기술은 대단한 기술머신이 필요할 수 있습니다.</p>
     <input id="raid500Search" type="search" placeholder="이름으로 검색" aria-label="500위 목록 검색" hidden>
@@ -13,7 +14,17 @@
     <div id="raid500List" class="rank-list"></div>
     <button id="raid500More" type="button" class="secondary" hidden>50개 더 보기</button>
     <p class="small">데이터 · PoGo API / 이름과 이미지 · PokéAPI</p>
-  <p class="small"><a href="https://db.pokemongohub.net/best/overall-attackers" target="_blank" rel="noopener noreferrer">실전 시뮬레이션 순위 · Pokémon GO Hub</a></p><button id="loadRaid500" type="button" hidden>순위 다시 불러오기</button></section><div id="minePanel"><section class="panel"><h2 id="formTitle">포켓몬 등록</h2><form id="form"><div class="fields"><label>포켓몬 이름<input id="name" list="names" placeholder="예: 레어코일" required autocomplete="off"><datalist id="names"></datalist></label><label>공격 IV (0~15)<input id="atk" type="number" min="0" max="15" value="15" required></label><label>방어 IV (0~15)<input id="def" type="number" min="0" max="15" value="15" required></label><label>HP IV (0~15)<input id="hp" type="number" min="0" max="15" value="15" required></label><label>상태<select id="formState"><option value="normal">일반</option><option value="shadow">그림자</option><option value="purified">정화</option></select></label><label>현재 CP<input id="cp" type="number" min="10" max="10000" placeholder="선택 입력"></label><label>노말 기술<input id="fast" placeholder="예: 전기쇼크"></label><label>스페셜 기술<input id="charged" placeholder="예: 와일드볼트"></label></div><div class="actions"><button type="submit" id="save">도감에 추가</button><button type="button" class="secondary hidden" id="cancel">수정 취소</button></div></form><p class="small">이름은 추천 목록에서 선택하실 수 있습니다. 목록에 없는 포켓몬도 등록 가능하지만, 레이드 성능은 '미평가'로 표시됩니다.</p></section><section class="panel"><h2>내 포켓몬</h2><div class="toolbar"><input id="search" placeholder="이름·기술 검색" aria-label="검색"><select id="typeFilter" aria-label="타입 필터"><option value="">전체 타입</option></select><select id="stateFilter" aria-label="상태 필터"><option value="">전체 상태</option><option value="shadow">그림자</option><option value="normal">일반</option><option value="purified">정화</option></select><select id="sort" aria-label="정렬"><option value="score">추천순</option><option value="iv">IV 높은순</option><option value="name">이름순</option><option value="new">최근 등록순</option></select></div><div class="cards" id="cards"></div><div class="actions"><button class="secondary" id="export">JSON 백업</button><button class="secondary" id="importBtn">JSON 복원</button><input id="import" type="file" accept="application/json" class="hidden"><button class="secondary" id="demo">예시 3개 넣기</button></div></section><section class="panel"><h2>선택 포켓몬 비교 (최대 3마리)</h2><div id="comparison" class="compare"><p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p></div></section><section class="panel"><h2>평가 기준과 주의사항</h2><p class="note">레이드 기본 활용도는 주요 포켓몬의 공개 공격자 순위를 참고해 만든 <b>수동 편집 참고 등급(0~100)</b>입니다. 게임의 공식 수치나 실제 DPS가 아닙니다. 육성 점수 = 기본 활용도 75% + IV 점수 20% + 기술 입력 적합성 보정 최대 5점입니다. 기술의 적합성은 일부 등록된 추천 기술만 확인하며, 미입력 기술은 감점하지 않습니다. 그림자 개체는 별도의 기초 등급이 있는 경우 이를 사용하며, 단순히 그림자라는 이유만으로 가산하지 않습니다. 진화 가능성은 일부 종에만 수록했습니다. 미수록 종의 진화·기술은 직접 확인해야 합니다.</p><p class="note">'최우선'은 85점 이상, '육성 후보'는 70점 이상, '상황별'은 55점 이상입니다. IV가 좋아도 종 자체의 레이드 성능이 낮으면 육성을 추천하지 않습니다. 한정 기술, 메가에너지, 사탕과 별의모래 비용, 레이드 보스 상성은 별도로 고려해야 합니다.</p><p class="small">참고: <a style="color:#8bd7ff" href="https://db.pokemongohub.net/best/raid-attackers" target="_blank" rel="noopener">GO Hub 레이드 공격자 순위</a> · 2026-11-06 확인. 자료 자동 갱신 기능은 없습니다. 데이터는 브라우저 내부 저장소에만 저장됩니다. 브라우저 데이터 삭제 시 사라질 수 있으니 JSON 백업을 권장합니다.</p></section></div></main><script>
+  <p class="small"><a href="https://db.pokemongohub.net/best/overall-attackers" target="_blank" rel="noopener noreferrer">실전 시뮬레이션 순위 · Pokémon GO Hub</a></p><button id="loadRaid500" type="button" hidden>순위 다시 불러오기</button></section><section class="panel hidden" id="counterPanel">
+  <h2>카운터 검색창</h2>
+  <label for="counterSearch">보스 이름 또는 폼</label>
+  <input id="counterSearch" type="search" placeholder="예: 레쿠쟈, 랜드로스 영물폼" disabled>
+  <p id="counterStatus" role="status"></p>
+  <button id="counterRetry" type="button" hidden>다시 불러오기</button>
+  <div id="counterMatches" class="actions"></div>
+  <div id="counterResult"></div>
+  <p class="note">현재 출현 목록과 별개로 보스를 검색할 수 있어요. 카운터 상위 20개는 기술 상성, 자속, 공격 주기와 내구도를 반영한 참고 순위예요. 타입 필터는 차지 기술 기준입니다. 메가·그림자 공격자, 보스 기술, 날씨, 파티 파워는 계산에서 제외합니다. 일부 기술은 대단한 기술머신이 필요할 수 있어요.</p>
+</section>
+<div id="minePanel"><section class="panel"><h2 id="formTitle">포켓몬 등록</h2><form id="form"><div class="fields"><label>포켓몬 이름<input id="name" list="names" placeholder="예: 레어코일" required autocomplete="off"><datalist id="names"></datalist></label><label>공격 IV (0~15)<input id="atk" type="number" min="0" max="15" value="15" required></label><label>방어 IV (0~15)<input id="def" type="number" min="0" max="15" value="15" required></label><label>HP IV (0~15)<input id="hp" type="number" min="0" max="15" value="15" required></label><label>상태<select id="formState"><option value="normal">일반</option><option value="shadow">그림자</option><option value="purified">정화</option></select></label><label>현재 CP<input id="cp" type="number" min="10" max="10000" placeholder="선택 입력"></label><label>노말 기술<input id="fast" placeholder="예: 전기쇼크"></label><label>스페셜 기술<input id="charged" placeholder="예: 와일드볼트"></label></div><div class="actions"><button type="submit" id="save">도감에 추가</button><button type="button" class="secondary hidden" id="cancel">수정 취소</button></div></form><p class="small">이름은 추천 목록에서 선택하실 수 있습니다. 목록에 없는 포켓몬도 등록 가능하지만, 레이드 성능은 '미평가'로 표시됩니다.</p></section><section class="panel"><h2>내 포켓몬</h2><div class="toolbar"><input id="search" placeholder="이름·기술 검색" aria-label="검색"><select id="typeFilter" aria-label="타입 필터"><option value="">전체 타입</option></select><select id="stateFilter" aria-label="상태 필터"><option value="">전체 상태</option><option value="shadow">그림자</option><option value="normal">일반</option><option value="purified">정화</option></select><select id="sort" aria-label="정렬"><option value="score">추천순</option><option value="iv">IV 높은순</option><option value="name">이름순</option><option value="new">최근 등록순</option></select></div><div class="cards" id="cards"></div><div class="actions"><button class="secondary" id="export">JSON 백업</button><button class="secondary" id="importBtn">JSON 복원</button><input id="import" type="file" accept="application/json" class="hidden"><button class="secondary" id="demo">예시 3개 넣기</button></div></section><section class="panel"><h2>선택 포켓몬 비교 (최대 3마리)</h2><div id="comparison" class="compare"><p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p></div></section><section class="panel"><h2>평가 기준과 주의사항</h2><p class="note">레이드 기본 활용도는 주요 포켓몬의 공개 공격자 순위를 참고해 만든 <b>수동 편집 참고 등급(0~100)</b>입니다. 게임의 공식 수치나 실제 DPS가 아닙니다. 육성 점수 = 기본 활용도 75% + IV 점수 20% + 기술 입력 적합성 보정 최대 5점입니다. 기술의 적합성은 일부 등록된 추천 기술만 확인하며, 미입력 기술은 감점하지 않습니다. 그림자 개체는 별도의 기초 등급이 있는 경우 이를 사용하며, 단순히 그림자라는 이유만으로 가산하지 않습니다. 진화 가능성은 일부 종에만 수록했습니다. 미수록 종의 진화·기술은 직접 확인해야 합니다.</p><p class="note">'최우선'은 85점 이상, '육성 후보'는 70점 이상, '상황별'은 55점 이상입니다. IV가 좋아도 종 자체의 레이드 성능이 낮으면 육성을 추천하지 않습니다. 한정 기술, 메가에너지, 사탕과 별의모래 비용, 레이드 보스 상성은 별도로 고려해야 합니다.</p><p class="small">참고: <a style="color:#8bd7ff" href="https://db.pokemongohub.net/best/raid-attackers" target="_blank" rel="noopener">GO Hub 레이드 공격자 순위</a> · 2026-11-06 확인. 자료 자동 갱신 기능은 없습니다. 데이터는 브라우저 내부 저장소에만 저장됩니다. 브라우저 데이터 삭제 시 사라질 수 있으니 JSON 백업을 권장합니다.</p></section></div></main><script>
 'use strict';
 // Conservative curated examples; scores are editorial heuristics, not combat simulation.
 const catalog=[
@@ -75,7 +86,7 @@ function pokemonSprite(name) {
 const clean=s=>String(s??'').trim();const esc=s=>clean(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const lookup=n=>catalog.find(x=>x.name.toLowerCase()===clean(n).toLowerCase());const iv=x=>Number(x.atk)+Number(x.def)+Number(x.hp);const calc=x=>{let p=lookup(x.name);if(!p)return null;let base=x.state==='shadow'?p.shadow:p.base;let tech=0;if(clean(x.fast)&&clean(x.fast)===p.fast)tech+=2;if(clean(x.charged)&&clean(x.charged)===p.charged)tech+=3;return Math.min(100,Math.round(base*.75+(iv(x)/45*100)*.20+tech))};const grade=s=>s===null?'미평가':s>=85?'최우선':s>=70?'육성 후보':s>=55?'상황별':'보류';const advise=x=>{let p=lookup(x.name),s=calc(x);if(!p)return '기본 레이드 데이터가 없어 평가할 수 없습니다.';if(p.evolve)return `진화 후보: ${p.evolve}. 진화 후 기술과 사탕 비용을 확인하세요.`;if(s>=85)return '레이드 주력 육성 후보. 기술과 타입별 보유 전력을 확인하세요.';if(s>=70)return '타입별 전력이 부족하면 육성을 고려하세요.';return '별의모래 투자는 보류하고 더 좋은 공격자를 우선 검토하세요.'};function persist(){localStorage.setItem(key,JSON.stringify(entries))};function render(){let q=clean($('search').value).toLowerCase(),type=$('typeFilter').value,state=$('stateFilter').value;let list=entries.filter(x=>(x.name+' '+x.fast+' '+x.charged).toLowerCase().includes(q)&&(!type||lookup(x.name)?.type===type)&&(!state||x.state===state));let sort=$('sort').value;list.sort((a,b)=>sort==='iv'?iv(b)-iv(a):sort==='name'?a.name.localeCompare(b.name,'ko'):sort==='new'?b.created-a.created:(calc(b)??-1)-(calc(a)??-1));$('count').textContent=entries.length;$('priority').textContent=entries.filter(x=>(calc(x)??0)>=85).length;$('selected').textContent=compare.size+'/3';$('cards').innerHTML=list.length?list.map(x=>{let s=calc(x),p=lookup(x.name);return `<article class="pokemon"><div class="top"><div><h3>${pokemonSprite(p?.name)}${esc(x.name)}</h3><span class="pill">${esc(p?.type||'타입 미등록')}</span><span class="pill">${x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'}</span><span class="pill">${grade(s)}</span></div><div class="score">${s===null?'—':s}<div class="small">참고 점수</div></div></div><p class="note">IV ${x.atk}/${x.def}/${x.hp} (${Math.round(iv(x)/45*100)}%)${x.cp?' · CP '+x.cp:''}<br>기술: ${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}</p><p class="note">${esc(advise(x))}</p><div class="actions"><label class="check"><input type="checkbox" data-action="compare" data-id="${esc(x.id)}" ${compare.has(x.id)?'checked':''} ${!compare.has(x.id)&&compare.size>=3?'disabled':''}> 비교</label><button class="secondary" data-action="edit" data-id="${esc(x.id)}">수정</button><button class="danger" data-action="delete" data-id="${esc(x.id)}">삭제</button></div></article>`}).join(''):'<p class="empty">조건에 맞는 포켓몬이 없습니다.</p>';let chosen=entries.filter(x=>compare.has(x.id));$('comparison').innerHTML=chosen.length?`<table><thead><tr><th>항목</th>${chosen.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>${[['상태',x=>x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'],['IV',x=>`${x.atk}/${x.def}/${x.hp}`],['IV 합계',x=>`${iv(x)}/45`],['기술',x=>`${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}`],['참고 점수',x=>calc(x)??'미평가'],['추천',x=>grade(calc(x))],['판단',x=>esc(advise(x))]].map(([title,fn])=>`<tr><th>${title}</th>${chosen.map(x=>`<td>${fn(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p>'};
 $('form').onsubmit=e=>{e.preventDefault();let name=clean($('name').value);let nums=['atk','def','hp'].map(k=>Number($(k).value));if(!name||nums.some(v=>!Number.isInteger(v)||v<0||v>15)){alert('이름과 IV(0~15)를 확인하세요.');return}let data={name,atk:nums[0],def:nums[1],hp:nums[2],state:$('formState').value,cp:clean($('cp').value),fast:clean($('fast').value),charged:clean($('charged').value)};if(editing){let i=entries.findIndex(x=>x.id===editing);if(i>=0)entries[i]={...entries[i],...data}}else entries.push({...data,id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),created:Date.now()});persist();reset();render()};function reset(){editing=null;$('form').reset();['atk','def','hp'].forEach(id=>$(id).value=15);$('save').textContent='도감에 추가';$('formTitle').textContent='포켓몬 등록';$('cancel').classList.add('hidden')};$('cancel').onclick=reset;$('cards').addEventListener('click',e=>{let b=e.target.closest('[data-action]');if(!b)return;let id=b.dataset.id,x=entries.find(z=>z.id===id);if(!x)return;if(b.dataset.action==='delete'){if(confirm(x.name+'을(를) 삭제할까요?')){entries=entries.filter(z=>z.id!==id);compare.delete(id);persist();render()}}else if(b.dataset.action==='edit'){editing=id;['name','atk','def','hp','cp','fast','charged'].forEach(k=>$(k).value=x[k]??'');$('formState').value=x.state;$('save').textContent='수정 저장';$('formTitle').textContent='포켓몬 수정';$('cancel').classList.remove('hidden');$('form').scrollIntoView({behavior:'smooth'})}});$('cards').addEventListener('change',e=>{if(e.target.dataset.action!=='compare')return;let id=e.target.dataset.id;if(e.target.checked){if(compare.size<3)compare.add(id)}else compare.delete(id);render()});['search','typeFilter','stateFilter','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));$('export').onclick=()=>{let blob=new Blob([JSON.stringify({version:1,entries},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pokemon-raid-dex-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};$('importBtn').onclick=()=>$('import').click();$('import').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data.entries))throw Error('형식 오류');let valid=data.entries.slice(0,1000).filter(x=>x&&typeof x.name==='string'&&['normal','shadow','purified'].includes(x.state)&&['atk','def','hp'].every(k=>Number.isInteger(Number(x[k]))&&Number(x[k])>=0&&Number(x[k])<=15)).map((x,i)=>({...x,id:String(x.id||'import'+i),created:Number(x.created)||Date.now()}));if(!confirm(`유효한 ${valid.length}개 항목으로 현재 도감을 교체할까요?`))return;entries=valid;compare.clear();persist();render()}catch{alert('올바른 백업 파일이 아닙니다.')}e.target.value=''};$('demo').onclick=()=>{if(entries.length&&!confirm('기존 목록에 예시 3개를 추가할까요?'))return;[['레어코일',15,15,14,'normal'],['망나뇽',15,13,15,'normal'],['거대코뿌리',14,15,15,'shadow']].forEach(([name,atk,def,hp,state],i)=>entries.push({id:'demo'+Date.now()+i,created:Date.now()+i,name,atk,def,hp,state,cp:'',fast:'',charged:''}));persist();render()};$('names').innerHTML=catalog.map(x=>`<option value="${esc(x.name)}">`).join('');$('typeFilter').innerHTML+=[...new Set(catalog.map(x=>x.type))].sort((a,b)=>a.localeCompare(b,'ko')).map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');render();
 
-function showTab(which){$('rankPanel').classList.toggle('hidden',which!=='ranks');$('minePanel').classList.toggle('hidden',which!=='mine');$('tabRanks').classList.toggle('secondary',which!=='ranks');$('tabMine').classList.toggle('secondary',which!=='mine')}
+function showTab(which){$('counterPanel').classList.toggle('hidden',which!=='counter');$('tabCounter').classList.toggle('secondary',which!=='counter');$('rankPanel').classList.toggle('hidden',which!=='ranks');$('minePanel').classList.toggle('hidden',which!=='mine');$('tabRanks').classList.toggle('secondary',which!=='ranks');$('tabMine').classList.toggle('secondary',which!=='mine')}
 $('tabRanks').onclick=()=>showTab('ranks');
 $('tabMine').onclick=()=>showTab('mine');
 showTab('ranks');
@@ -137,7 +148,7 @@ const speciesId = row => Number(row.pokemon_id ?? row.id);
 const formKey = row => speciesId(row) + ':' + formOf(row);
 const eligibleForm = row => formOf(row) === 'normal' || Object.hasOwn(formLabels, formOf(row));
 
-function calculateRaid500(stats, pools, fast, charged, released, names) {
+function calculateRaid500(stats, pools, fast, charged, released, names, options = {}) {
   const index = (rows, key) => new Map(rows.map(row => [key(row), row]));
   const poolsByForm = index(pools, formKey);
   const fastByName = index(fast, row => row.name);
@@ -159,11 +170,22 @@ function calculateRaid500(stats, pools, fast, charged, released, names) {
         const c = chargedByName.get(chargedName);
         if (!(c?.energy_delta < 0 && c.duration > 0)) continue;
         const uses = Math.ceil(-c.energy_delta / f.energy_delta);
-        const rate = 1000 * (uses * Number(f.power) + Number(c.power)) / (uses * Number(f.duration) + Number(c.duration));
+        let fastMultiplier = 1;
+        let chargedMultiplier = 1;
+        if (options.bossTypes) {
+          const attackerTypes = options.typesByForm.get(key);
+          if (!attackerTypes || (options.chargedType && options.chargedType !== c.type)) continue;
+          chargedMultiplier = damageMultiplier(options.chart,c.type,options.bossTypes);
+          if (chargedMultiplier <= 1.001) continue;
+          fastMultiplier = damageMultiplier(options.chart,f.type,options.bossTypes);
+          if (attackerTypes.includes(f.type)) fastMultiplier *= 1.2;
+          if (attackerTypes.includes(c.type)) chargedMultiplier *= 1.2;
+        }
+        const rate = 1000 * (uses * Number(f.power) * fastMultiplier + Number(c.power) * chargedMultiplier) / (uses * Number(f.duration) + Number(c.duration));
         const score = rate * (Number(row.base_attack) + 15) / 100 *
           (((Number(row.base_defense) + 15) * (Number(row.base_stamina) + 15)) / 40000) ** 0.25;
         if (Number.isFinite(score) && score > 0 && (!best || score > best.score)) {
-          best = {score, fastName, chargedName};
+          best = {score, fastName, chargedName, fastType:f.type, chargedType:c.type};
         }
       }
     }
@@ -173,7 +195,7 @@ function calculateRaid500(stats, pools, fast, charged, released, names) {
     result.push({...best, id, form, sprite:formSprites[key] || id, english:english + ' ' + form,
       name:(names.get(id) || english) + label});
   }
-  return result.sort((a,b) => b.score - a.score || a.id - b.id || a.form.localeCompare(b.form)).slice(0,500)
+  return result.sort((a,b) => b.score - a.score || a.id - b.id || a.form.localeCompare(b.form)).slice(0,options.limit ?? 500)
     .map((row,i) => ({...row, rank:i + 1}));
 }
 
@@ -195,21 +217,8 @@ async function loadRaidRanks() {
   if (rankedRaidSpecies.length) return;
   button.hidden = true;
   raidStatus.textContent = '레이드 데이터를 불러오는 중…';
-  const get = async url => {
-    const response = await fetch(url, {signal:AbortSignal.timeout(18000)});
-    if (!response.ok) throw Error('HTTP ' + response.status);
-    return response;
-  };
   try {
-    const api = 'https://pogoapi.net/api/v1/';
-    const names = get('https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv')
-      .then(response => response.text()).then(csv => new Map(csv.split(/\r?\n/).flatMap(line => {
-        const [id, language, name] = line.split(',');
-        return language === '3' && name ? [[Number(id),name]] : [];
-      }))).catch(() => new Map());
-    const data = await Promise.all(['pokemon_stats','current_pokemon_moves','fast_moves','charged_moves','released_pokemon']
-      .map(endpoint => get(api + endpoint + '.json').then(response => response.json())));
-    rankedRaidSpecies = calculateRaid500(...data, await names);
+    rankedRaidSpecies = calculateRaid500(...await getRaidData());
     if (!rankedRaidSpecies.length) throw Error('No ranking data');
     raidSearch.hidden = false;
     showRaid500();
@@ -220,6 +229,28 @@ async function loadRaidRanks() {
   }
 }
 button.addEventListener('click',loadRaidRanks);
+const raidApi = 'https://pogoapi.net/api/v1/';
+let raidDataPromise;
+const getRaidResponse = async url => {
+    const response = await fetch(url, {signal:AbortSignal.timeout(18000)});
+    if (!response.ok) throw Error('HTTP ' + response.status);
+    return response;
+  };
+function getRaidData() {
+  if (raidDataPromise) return raidDataPromise;
+  raidDataPromise = (async () => {
+    
+    const names = getRaidResponse('https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv')
+      .then(response => response.text()).then(csv => new Map(csv.split(/\r?\n/).flatMap(line => {
+        const [id, language, name] = line.split(',');
+        return language === '3' && name ? [[Number(id),name]] : [];
+      }))).catch(() => new Map());
+    const data = await Promise.all(['pokemon_stats','current_pokemon_moves','fast_moves','charged_moves','released_pokemon']
+      .map(endpoint => getRaidResponse(raidApi + endpoint + '.json').then(response => response.json())));
+    return [...data,await names];
+  })().catch(error => {raidDataPromise = null;throw error;});
+  return raidDataPromise;
+}
 loadRaidRanks();
 raidList.addEventListener('click', event => {
   const pick = event.target.closest('[data-raid-name]');
@@ -229,7 +260,124 @@ raidList.addEventListener('click', event => {
   showTab('mine');
   $('form').scrollIntoView({behavior:'smooth'});
 });
+</script><script>
+const typeNames = {
+  Normal:'노말', Fire:'불꽃', Water:'물', Electric:'전기', Grass:'풀', Ice:'얼음',
+  Fighting:'격투', Poison:'독', Ground:'땅', Flying:'비행', Psychic:'에스퍼',
+  Bug:'벌레', Rock:'바위', Ghost:'고스트', Dragon:'드래곤', Dark:'악', Steel:'강철', Fairy:'페어리'
+};
+const counterInput = $('counterSearch');
+const counterMatches = $('counterMatches');
+const counterResult = $('counterResult');
+const counterStatus = $('counterStatus');
+let counterData;
+let counterPending;
+let selectedBoss;
+
+function damageMultiplier(chart, attackType, defenderTypes) {
+  return defenderTypes.reduce((value, type) => value * Number(chart[attackType]?.[type] ?? 1), 1);
+}
+
+async function loadCounter() {
+  if (counterData || counterPending) return;
+  counterStatus.textContent = '상성 데이터를 불러오는 중…';
+  $('counterRetry').hidden = true;
+  counterPending = Promise.all([
+    getRaidData(),
+    getRaidResponse(raidApi + 'pokemon_types.json').then(response => response.json()),
+    getRaidResponse(raidApi + 'type_effectiveness.json').then(response => response.json())
+  ]);
+  try {
+    const [data, typings, chart] = await counterPending;
+    if (!Array.isArray(typings) || Object.keys(typeNames).some(type => !chart[type])) throw Error('Invalid type data');
+    const [,,,,released,names] = data;
+    const typesByForm = new Map();
+    const bosses = new Map();
+    for (const row of typings) {
+      const id = speciesId(row);
+      const form = formOf(row);
+      const key = formKey(row);
+      if (!Array.isArray(row.type) || !row.type.length || !row.type.every(type => typeNames[type])) continue;
+      typesByForm.set(key, row.type);
+      if (!Object.hasOwn(released,id) || (!eligibleForm(row) && !/^(mega(?:_[xy])?|primal)$/.test(form))) continue;
+      const english = row.pokemon_name || row.name || '#' + id;
+      const label = form === 'normal' ? '' : ' (' + (formLabels[form] || form.replaceAll('_',' ')) + ')';
+      bosses.set(key,{key,id,english,name:(names.get(id) || english) + label,types:row.type});
+    }
+    counterData = {data,chart,typesByForm,bosses:[...bosses.values()]};
+    counterInput.disabled = false;
+    updateBossMatches();
+  } catch {
+    counterStatus.textContent = '상성 데이터를 불러오지 못했어요.';
+    $('counterRetry').hidden = false;
+  } finally {
+    counterPending = null;
+  }
+}
+
+function updateBossMatches() {
+  const normalize = value => value.toLowerCase().replace(/[\s()_-]/g,'');
+  const query = normalize(counterInput.value.trim());
+  counterMatches.replaceChildren();
+  counterResult.replaceChildren();
+  selectedBoss = null;
+  if (!query) {
+    counterStatus.textContent = '보스 이름을 입력한 뒤 검색 결과에서 폼을 선택하세요.';
+    return;
+  }
+  const matches = counterData.bosses.filter(boss =>
+    normalize(boss.name).includes(query) || normalize(boss.english).includes(query) || String(boss.id) === query);
+  counterStatus.textContent = matches.length ? '보스를 선택하세요.' : '검색 결과가 없어요. 이름이나 전국도감 번호를 확인하세요.';
+  for (const boss of matches.slice(0,20)) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'secondary';
+    button.textContent = boss.name + ' · ' + boss.types.map(type => typeNames[type]).join(' / ');
+    button.addEventListener('click',() => {
+      selectedBoss = boss;
+      counterMatches.replaceChildren();
+      counterStatus.textContent = '';
+      showCounterBoss();
+    });
+    counterMatches.appendChild(button);
+  }
+}
+
+function showCounterBoss() {
+  const boss = selectedBoss;
+  const {chart,typesByForm,data} = counterData;
+  const multipliers = Object.keys(typeNames).map(type => [type,damageMultiplier(chart,type,boss.types)]);
+  const weak = multipliers.filter(([,value]) => value > 1.001).sort((a,b) => b[1] - a[1]);
+  const resisted = multipliers.filter(([,value]) => value < 0.999).sort((a,b) => a[1] - b[1]);
+  const chips = pairs => pairs.map(([type,value]) =>
+    `<span class="pill">${typeNames[type]} ×${Number(value.toFixed(3))}</span>`).join(' ') || '없음';
+  const options = {bossTypes:boss.types, chart, typesByForm};
+  counterResult.innerHTML = `<h3>${esc(boss.name)} · ${boss.types.map(type => typeNames[type]).join(' / ')}</h3>
+    <p><strong>효과가 뛰어난 공격 타입</strong><br>${chips(weak)}</p>
+    <p><strong>효과가 적은 공격 타입</strong><br>${chips(resisted)}</p>
+    <label>카운터 기술 타입 <select id="counterType">
+    <option value="">전체 약점 타입</option>${weak.map(([type]) => `<option value="${type}">${typeNames[type]}</option>`).join('')}
+    </select></label><div id="counterRanks" class="rank-list"></div>`;
+  const filter = $('counterType');
+  function renderCounters() {
+    const counters = calculateRaid500(...data,{...options, chargedType:filter.value, limit:20});
+    $('counterRanks').innerHTML = counters.map(row => `<article class="rank-item">
+      <div class="rank-number">${row.rank}</div><div>
+      <img class="pokemon-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${row.sprite}.png" alt="" width="36" height="36" loading="lazy" decoding="async" onerror="if(this.dataset.fallback){this.hidden=true}else{this.dataset.fallback=1;this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${row.id}.png'}">
+      <strong>${esc(row.name)}</strong><div class="small">${esc(row.fastName)} (${esc(typeNames[row.fastType] || row.fastType)}) /
+      ${esc(row.chargedName)} (${esc(typeNames[row.chargedType] || row.chargedType)})</div></div></article>`).join('') ||
+      '<p class="empty">이 타입에 해당하는 기술 조합을 찾지 못했어요.</p>';
+  }
+  filter.addEventListener('change',renderCounters);
+  renderCounters();
+}
+counterInput.addEventListener('input',updateBossMatches);
+$('counterRetry').addEventListener('click',loadCounter);
+$('tabCounter').onclick = () => {showTab('counter');loadCounter();};
+
 </script></body></html>
+
+
 
 
 
