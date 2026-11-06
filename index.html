@@ -4,7 +4,20 @@
 .tabs{display:flex;gap:8px;overflow-x:auto;margin:18px 0}.tabs button{white-space:nowrap}.rank-toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:9px;margin-bottom:12px}.rank-list{display:grid;gap:9px}.rank-item{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;background:#1b2741;border:1px solid #33415f;border-radius:12px;padding:13px}.rank-number{font-weight:900;color:#8bd7ff;font-size:20px}.rank-item strong{font-size:16px}.rank-item .small{margin-top:5px}.rank-item button{padding:9px}.disclaimer{border-left:3px solid #f0b45e;padding-left:12px}.hidden{display:none!important}@media(max-width:720px){.rank-toolbar{grid-template-columns:1fr 1fr}.rank-toolbar input{grid-column:span 2}.rank-item{grid-template-columns:36px 1fr auto;gap:7px;padding:10px}.rank-item button{font-size:12px;padding:8px}}
 .pokemon-sprite{width:48px;height:48px;object-fit:contain;vertical-align:middle;margin-right:6px}
 .update-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button></nav><section class="panel" id="rankPanel"><h2>레이드 육성 우선순위 · 검색 도감</h2><p class="note disclaimer">현재 순위는 검증된 전체 포켓몬 공식 순위가 아니라 선별된 주요 공격자의 참고용 상대 등급입니다. 미수록 포켓몬은 순위 미평가입니다. 메가·원시회귀·그림자 및 기술 구성에 따라 실제 순위는 달라집니다. 순위 숫자를 DPS로 해석하지 마세요.</p><div class="rank-toolbar"><input id="rankSearch" placeholder="포켓몬 검색 · 예: 뮤츠, 레어코일" aria-label="포켓몬 검색"><select id="rankType" aria-label="타입"><option value="">모든 타입</option></select><select id="rankMode" aria-label="순위 기준"><option value="base">일반 공격자</option><option value="shadow">그림자 가정</option></select></div><div class="small" id="rankCount"></div><div class="rank-list" id="rankList"></div></section><div id="minePanel"><section class="panel"><h2 id="formTitle">포켓몬 등록</h2><form id="form"><div class="fields"><label>포켓몬 이름<input id="name" list="names" placeholder="예: 레어코일" required autocomplete="off"><datalist id="names"></datalist></label><label>공격 IV (0~15)<input id="atk" type="number" min="0" max="15" value="15" required></label><label>방어 IV (0~15)<input id="def" type="number" min="0" max="15" value="15" required></label><label>HP IV (0~15)<input id="hp" type="number" min="0" max="15" value="15" required></label><label>상태<select id="formState"><option value="normal">일반</option><option value="shadow">그림자</option><option value="purified">정화</option></select></label><label>현재 CP<input id="cp" type="number" min="10" max="10000" placeholder="선택 입력"></label><label>노말 기술<input id="fast" placeholder="예: 전기쇼크"></label><label>스페셜 기술<input id="charged" placeholder="예: 와일드볼트"></label></div><div class="actions"><button type="submit" id="save">도감에 추가</button><button type="button" class="secondary hidden" id="cancel">수정 취소</button></div></form><p class="small">이름은 추천 목록에서 선택하실 수 있습니다. 목록에 없는 포켓몬도 등록 가능하지만, 레이드 성능은 '미평가'로 표시됩니다.</p></section><section class="panel"><h2>내 포켓몬</h2><div class="toolbar"><input id="search" placeholder="이름·기술 검색" aria-label="검색"><select id="typeFilter" aria-label="타입 필터"><option value="">전체 타입</option></select><select id="stateFilter" aria-label="상태 필터"><option value="">전체 상태</option><option value="shadow">그림자</option><option value="normal">일반</option><option value="purified">정화</option></select><select id="sort" aria-label="정렬"><option value="score">추천순</option><option value="iv">IV 높은순</option><option value="name">이름순</option><option value="new">최근 등록순</option></select></div><div class="cards" id="cards"></div><div class="actions"><button class="secondary" id="export">JSON 백업</button><button class="secondary" id="importBtn">JSON 복원</button><input id="import" type="file" accept="application/json" class="hidden"><button class="secondary" id="demo">예시 3개 넣기</button></div></section><section class="panel"><h2>선택 포켓몬 비교 (최대 3마리)</h2><div id="comparison" class="compare"><p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p></div></section><section class="panel"><h2>평가 기준과 주의사항</h2><p class="note">레이드 기본 활용도는 주요 포켓몬의 공개 공격자 순위를 참고해 만든 <b>수동 편집 참고 등급(0~100)</b>입니다. 게임의 공식 수치나 실제 DPS가 아닙니다. 육성 점수 = 기본 활용도 75% + IV 점수 20% + 기술 입력 적합성 보정 최대 5점입니다. 기술의 적합성은 일부 등록된 추천 기술만 확인하며, 미입력 기술은 감점하지 않습니다. 그림자 개체는 별도의 기초 등급이 있는 경우 이를 사용하며, 단순히 그림자라는 이유만으로 가산하지 않습니다. 진화 가능성은 일부 종에만 수록했습니다. 미수록 종의 진화·기술은 직접 확인해야 합니다.</p><p class="note">'최우선'은 85점 이상, '육성 후보'는 70점 이상, '상황별'은 55점 이상입니다. IV가 좋아도 종 자체의 레이드 성능이 낮으면 육성을 추천하지 않습니다. 한정 기술, 메가에너지, 사탕과 별의모래 비용, 레이드 보스 상성은 별도로 고려해야 합니다.</p><p class="small">참고: <a style="color:#8bd7ff" href="https://db.pokemongohub.net/best/raid-attackers" target="_blank" rel="noopener">GO Hub 레이드 공격자 순위</a> · 2026-11-06 확인. 자료 자동 갱신 기능은 없습니다. 데이터는 브라우저 내부 저장소에만 저장됩니다. 브라우저 데이터 삭제 시 사라질 수 있으니 JSON 백업을 권장합니다.</p></section></div></main><script>
+#raid500 [hidden], #raid500[hidden]{display:none!important} #raid500 .pokemon-sprite{width:36px;height:36px}
+</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button></nav><section class="panel" id="rankPanel"><div class="panel">
+  <button id="loadRaid500" type="button">레이드 육성 순위 500위 보기</button>
+  <section id="raid500" hidden>
+    <h2>레이드 육성 순위 · 최대 500종</h2>
+    <p class="note">출시된 기본 폼의 기술과 능력치를 사용한 중립 상대 기준 참고 순위입니다. 공격 주기와 내구도를 반영합니다. 메가·그림자·특수 폼, 자속·상성·보스별 조건은 제외합니다. 기술명은 영어이며 일부 기술은 대단한 기술머신이 필요할 수 있습니다.</p>
+    <input id="raid500Search" type="search" placeholder="이름으로 검색" aria-label="500위 목록 검색" hidden>
+    <p id="raid500Status" role="status"></p>
+    <div id="raid500List" class="rank-list"></div>
+    <button id="raid500More" type="button" class="secondary" hidden>50개 더 보기</button>
+    <p class="small">데이터 · PoGo API / 이름과 이미지 · PokéAPI</p>
+  </section>
+</div>
+<h2>레이드 육성 우선순위 · 검색 도감</h2><p class="note disclaimer">현재 순위는 검증된 전체 포켓몬 공식 순위가 아니라 선별된 주요 공격자의 참고용 상대 등급입니다. 미수록 포켓몬은 순위 미평가입니다. 메가·원시회귀·그림자 및 기술 구성에 따라 실제 순위는 달라집니다. 순위 숫자를 DPS로 해석하지 마세요.</p><div class="rank-toolbar"><input id="rankSearch" placeholder="포켓몬 검색 · 예: 뮤츠, 레어코일" aria-label="포켓몬 검색"><select id="rankType" aria-label="타입"><option value="">모든 타입</option></select><select id="rankMode" aria-label="순위 기준"><option value="base">일반 공격자</option><option value="shadow">그림자 가정</option></select></div><div class="small" id="rankCount"></div><div class="rank-list" id="rankList"></div></section><div id="minePanel"><section class="panel"><h2 id="formTitle">포켓몬 등록</h2><form id="form"><div class="fields"><label>포켓몬 이름<input id="name" list="names" placeholder="예: 레어코일" required autocomplete="off"><datalist id="names"></datalist></label><label>공격 IV (0~15)<input id="atk" type="number" min="0" max="15" value="15" required></label><label>방어 IV (0~15)<input id="def" type="number" min="0" max="15" value="15" required></label><label>HP IV (0~15)<input id="hp" type="number" min="0" max="15" value="15" required></label><label>상태<select id="formState"><option value="normal">일반</option><option value="shadow">그림자</option><option value="purified">정화</option></select></label><label>현재 CP<input id="cp" type="number" min="10" max="10000" placeholder="선택 입력"></label><label>노말 기술<input id="fast" placeholder="예: 전기쇼크"></label><label>스페셜 기술<input id="charged" placeholder="예: 와일드볼트"></label></div><div class="actions"><button type="submit" id="save">도감에 추가</button><button type="button" class="secondary hidden" id="cancel">수정 취소</button></div></form><p class="small">이름은 추천 목록에서 선택하실 수 있습니다. 목록에 없는 포켓몬도 등록 가능하지만, 레이드 성능은 '미평가'로 표시됩니다.</p></section><section class="panel"><h2>내 포켓몬</h2><div class="toolbar"><input id="search" placeholder="이름·기술 검색" aria-label="검색"><select id="typeFilter" aria-label="타입 필터"><option value="">전체 타입</option></select><select id="stateFilter" aria-label="상태 필터"><option value="">전체 상태</option><option value="shadow">그림자</option><option value="normal">일반</option><option value="purified">정화</option></select><select id="sort" aria-label="정렬"><option value="score">추천순</option><option value="iv">IV 높은순</option><option value="name">이름순</option><option value="new">최근 등록순</option></select></div><div class="cards" id="cards"></div><div class="actions"><button class="secondary" id="export">JSON 백업</button><button class="secondary" id="importBtn">JSON 복원</button><input id="import" type="file" accept="application/json" class="hidden"><button class="secondary" id="demo">예시 3개 넣기</button></div></section><section class="panel"><h2>선택 포켓몬 비교 (최대 3마리)</h2><div id="comparison" class="compare"><p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p></div></section><section class="panel"><h2>평가 기준과 주의사항</h2><p class="note">레이드 기본 활용도는 주요 포켓몬의 공개 공격자 순위를 참고해 만든 <b>수동 편집 참고 등급(0~100)</b>입니다. 게임의 공식 수치나 실제 DPS가 아닙니다. 육성 점수 = 기본 활용도 75% + IV 점수 20% + 기술 입력 적합성 보정 최대 5점입니다. 기술의 적합성은 일부 등록된 추천 기술만 확인하며, 미입력 기술은 감점하지 않습니다. 그림자 개체는 별도의 기초 등급이 있는 경우 이를 사용하며, 단순히 그림자라는 이유만으로 가산하지 않습니다. 진화 가능성은 일부 종에만 수록했습니다. 미수록 종의 진화·기술은 직접 확인해야 합니다.</p><p class="note">'최우선'은 85점 이상, '육성 후보'는 70점 이상, '상황별'은 55점 이상입니다. IV가 좋아도 종 자체의 레이드 성능이 낮으면 육성을 추천하지 않습니다. 한정 기술, 메가에너지, 사탕과 별의모래 비용, 레이드 보스 상성은 별도로 고려해야 합니다.</p><p class="small">참고: <a style="color:#8bd7ff" href="https://db.pokemongohub.net/best/raid-attackers" target="_blank" rel="noopener">GO Hub 레이드 공격자 순위</a> · 2026-11-06 확인. 자료 자동 갱신 기능은 없습니다. 데이터는 브라우저 내부 저장소에만 저장됩니다. 브라우저 데이터 삭제 시 사라질 수 있으니 JSON 백업을 권장합니다.</p></section></div></main><script>
 'use strict';
 // Conservative curated examples; scores are editorial heuristics, not combat simulation.
 const catalog=[
@@ -93,6 +106,98 @@ async function loadDailyUpdates() {
   }
 }
 document.getElementById('refreshUpdates').addEventListener('click',loadDailyUpdates);loadDailyUpdates();
-</script><footer style="text-align:center;padding:12px"><a href="https://github.com/PokeAPI/sprites" rel="noopener noreferrer" target="_blank">포켓몬 이미지 출처 · PokéAPI</a></footer></body></html>
+</script><footer style="text-align:center;padding:12px"><a href="https://github.com/PokeAPI/sprites" rel="noopener noreferrer" target="_blank">포켓몬 이미지 출처 · PokéAPI</a></footer><script>
+const raid500 = document.getElementById('raid500');
+const raidSearch = document.getElementById('raid500Search');
+const raidList = document.getElementById('raid500List');
+const raidStatus = document.getElementById('raid500Status');
+const raidMore = document.getElementById('raid500More');
+let rankedRaidSpecies = [];
+let raidLimit = 50;
+
+function calculateRaid500(stats, pools, fast, charged, released, names) {
+  const standard = rows => rows.filter(row => !row.form || row.form === 'Normal');
+  const index = (rows, key) => new Map(rows.map(row => [key(row), row]));
+  const speciesId = row => Number(row.pokemon_id ?? row.id);
+  const poolsById = index(standard(pools), speciesId);
+  const fastByName = index(fast, row => row.name);
+  const chargedByName = index(charged, row => row.name);
+  const result = [];
+  for (const row of index(standard(stats), speciesId).values()) {
+    const id = speciesId(row);
+    const pool = poolsById.get(id);
+    if (!Object.hasOwn(released, id) || !pool) continue;
+    let best = null;
+    const fastNames = [...(pool.fast_moves || []), ...(pool.elite_fast_moves || [])];
+    const chargedNames = [...(pool.charged_moves || []), ...(pool.elite_charged_moves || [])];
+    for (const fastName of fastNames) {
+      const f = fastByName.get(fastName);
+      if (!(f?.energy_delta > 0 && f.duration > 0)) continue;
+      for (const chargedName of chargedNames) {
+        const c = chargedByName.get(chargedName);
+        if (!(c?.energy_delta < 0 && c.duration > 0)) continue;
+        const uses = Math.ceil(-c.energy_delta / f.energy_delta);
+        const rate = 1000 * (uses * Number(f.power) + Number(c.power)) / (uses * Number(f.duration) + Number(c.duration));
+        const score = rate * (Number(row.base_attack) + 15) / 100 *
+          (((Number(row.base_defense) + 15) * (Number(row.base_stamina) + 15)) / 40000) ** 0.25;
+        if (Number.isFinite(score) && score > 0 && (!best || score > best.score)) {
+          best = {score, fastName, chargedName};
+        }
+      }
+    }
+    if (!best) continue;
+    const english = row.pokemon_name || row.name || '#' + id;
+    result.push({...best, id, english, name: names.get(id) || english});
+  }
+  return result.sort((a,b) => b.score - a.score || a.id - b.id).slice(0,500)
+    .map((row,i) => ({...row, rank:i + 1}));
+}
+
+function showRaid500() {
+  const query = raidSearch.value.trim().toLowerCase();
+  const filtered = rankedRaidSpecies.filter(row =>
+    row.name.toLowerCase().includes(query) || row.english.toLowerCase().includes(query));
+  raidStatus.textContent = '수록 ' + rankedRaidSpecies.length + '종 · 검색 결과 ' + filtered.length + '종';
+  raidList.innerHTML = filtered.slice(0,raidLimit).map(row =>
+    `<article class="rank-item"><div class="rank-number">${row.rank}</div><div><img class="pokemon-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${row.id}.png" width="36" height="36" loading="lazy" decoding="async" alt="" onerror="this.hidden=true"><strong>${esc(row.name)}</strong><div class="small">참고 지수 ${row.score.toFixed(1)} · ${esc(row.fastName)} / ${esc(row.chargedName)}</div></div></article>`
+  ).join('');
+  raidMore.hidden = filtered.length <= raidLimit;
+}
+
+raidSearch.addEventListener('input', () => {raidLimit = 50; showRaid500();});
+raidMore.addEventListener('click', () => {raidLimit += 50; showRaid500();});
+document.getElementById('loadRaid500').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  raid500.hidden = false;
+  if (rankedRaidSpecies.length) return;
+  button.disabled = true;
+  raidStatus.textContent = '레이드 데이터를 불러오는 중…';
+  const get = async url => {
+    const response = await fetch(url, {signal:AbortSignal.timeout(18000)});
+    if (!response.ok) throw Error('HTTP ' + response.status);
+    return response;
+  };
+  try {
+    const api = 'https://pogoapi.net/api/v1/';
+    const names = get('https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv')
+      .then(response => response.text()).then(csv => new Map(csv.split(/\r?\n/).flatMap(line => {
+        const [id, language, name] = line.split(',');
+        return language === '3' && name ? [[Number(id),name]] : [];
+      }))).catch(() => new Map());
+    const data = await Promise.all(['pokemon_stats','current_pokemon_moves','fast_moves','charged_moves','released_pokemon']
+      .map(endpoint => get(api + endpoint + '.json').then(response => response.json())));
+    rankedRaidSpecies = calculateRaid500(...data, await names);
+    if (!rankedRaidSpecies.length) throw Error('No ranking data');
+    raidSearch.hidden = false;
+    showRaid500();
+  } catch {
+    raidStatus.textContent = '데이터를 불러오지 못했어요. 연결을 확인한 후 버튼을 다시 눌러주세요.';
+  } finally {
+    button.disabled = false;
+  }
+});
+
+</script></body></html>
+
 
 
