@@ -6,11 +6,63 @@
 .update-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 #rankPanel [hidden]{display:none!important} #rankPanel .pokemon-sprite{width:36px;height:36px}
 #counterPanel [hidden]{display:none!important} #counterPanel .pokemon-sprite{width:36px;height:36px}
-</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button><button type="button" class="secondary" id="tabCounter">카운터 검색</button></nav><section class="panel" id="rankPanel">
-    <h2>레이드 육성 참고 순위 · 1~500위</h2>
-    <p class="note">출시 종의 기본형과 주요 전투 폼을 각각 계산한 중립 상대 기준 참고 순위입니다. 폼별 능력치와 기술이 모두 있는 항목을 계산하며, 폼 자체의 출시 여부는 별도로 검증하지 않습니다. 메가·그림자·자속·상성·보스별 조건은 제외합니다. 전용 그림이 없으면 기본형 그림을 표시합니다. 기술명은 영어이며 일부 기술은 대단한 기술머신이 필요할 수 있습니다.</p>
+.tabs{flex-wrap:wrap;overflow:visible}.pokemon a{color:#9bceff}#catchCpPanel select,#catchCpPanel input,#raidType{margin-bottom:12px}#updateStatus{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;font-size:13px;margin-left:8px}[hidden]{display:none!important}</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span><details><summary>포켓몬 GO 소식</summary><ul id="newsItems"></ul></details></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button><button type="button" class="secondary" id="tabCounter">카운터 검색</button><button type="button" class="secondary" id="tabMax">맥스배틀</button><button type="button" class="secondary" id="tabCp">포획 CP</button><button type="button" id="tabSchedule" class="secondary">레이드 일정</button></nav><section class="panel" id="catchCpPanel" hidden aria-labelledby="catchCpTitle">
+<h2 id="catchCpTitle">포획 최고 CP</h2>
+<p class="note">배틀 종료 후 포획 화면의 100% 개체값(15/15/15) 기준입니다. 확인된 포획 사례부터 표시합니다.</p>
+<label for="catchCpMode">배틀 종류</label>
+<select id="catchCpMode"><option value="">전체</option><option>일반 레이드</option><option>메가 레이드</option><option>맥스배틀</option></select>
+<label for="catchCpSearch">포켓몬 검색</label>
+<input id="catchCpSearch" type="search" placeholder="예: 리자몽, 자시안">
+<div class="cards" id="catchCpResults" aria-live="polite"></div><details><summary>포획 형태로 CP 계산</summary><p class="note">일반·메가 레이드는 실제로 포획하는 형태를 선택해 주세요. 맥스배틀은 포획 레벨 20 기준이며 날씨 부스트가 적용되지 않습니다. 이 계산은 배틀 출현 여부를 판정하지 않습니다.</p><label for="cpFormSearch">포획 형태 검색</label><input id="cpFormSearch" type="search" placeholder="예: 펄기아, Charizard"><label for="cpForm">포획 형태</label><select id="cpForm" disabled></select><p id="cpFormResult" role="status"></p><p class="small"><a href="https://pogoapi.net/documentation/">PoGo API · 능력치 및 CP 배율</a></p></details>
+</section>
+<script>
+(() => {
+  const encounters = [
+    { mode: '메가 레이드', boss: '메가리자몽 Y', reward: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'https://db.pokemongohub.net/pokemon/6-Mega_Y/iv-chart' },
+    { mode: '메가 레이드', boss: '메가메타그로스', reward: '메타그로스', catchCp: 2166, boostedCp: 2708, href: 'https://db.pokemongohub.net/pokemon/376-Mega/iv-chart' },
+{"mode":"일반 레이드","boss":"블랙큐레무","reward":"큐레무","catchCp":2042,"boostedCp":2553,"href":"post/guide/black-kyurem-raid-guide/"},
+{"mode":"일반 레이드","boss":"화이트큐레무","reward":"큐레무","catchCp":2042,"boostedCp":2553,"href":"https://db.pokemongohub.net/pokemon/646-White/iv-chart"},
+{"mode":"일반 레이드","boss":"레시라무","reward":null,"catchCp":2307,"boostedCp":2884,"href":"https://db.pokemongohub.net/pokemon/643/iv-chart"},
+{"mode":"맥스배틀","boss":"다이맥스 펄기아","reward":null,"catchCp":2280,"boostedCp":null,"href":"https://db.pokemongohub.net/pokemon/484-Dynamax/iv-chart"},
+{"mode":"맥스배틀","boss":"거다이맥스 두랄루돈","reward":null,"catchCp":1753,"boostedCp":null,"href":"https://db.pokemongohub.net/pokemon/884-Gigantamax/iv-chart"},
+
+    { mode: '일반 레이드', boss: '뮤츠', catchCp: 2387, boostedCp: 2984, href: 'post/guide/mewtwo-raid-boss/' },
+    { mode: '일반 레이드', boss: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'post/guide/charizard-raid-boss-guide/' },
+    { mode: '일반 레이드', boss: '검왕 자시안', reward: '역전의 용사 자시안', catchCp: 2188, boostedCp: 2735, href: 'post/guide/zacian-crowned-sword-raid-guide/' },
+    { mode: '일반 레이드', boss: '방패왕 자마젠타', reward: '역전의 용사 자마젠타', catchCp: 2188, boostedCp: 2735, href: 'post/guide/zamazenta-crowned-shield-raid-guide/' },
+    { mode: '메가 레이드', boss: '메가리자몽 X', reward: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'https://db.pokemongohub.net/pokemon/6-Mega_X/iv-chart' },
+    { mode: '맥스배틀', boss: '거다이맥스 리자몽', catchCp: 1651, boostedCp: null, href: 'post/article/gigantamax-charizard-max-battle-guide/' }
+  ];
+  const mode = document.getElementById('catchCpMode');
+  const search = document.getElementById('catchCpSearch');
+  const results = document.getElementById('catchCpResults');
+
+  function renderCatchCp() {
+    const query = search.value.toLowerCase().replace(/\s+/g, '');
+    const filtered = encounters.filter(({ mode: battleMode, boss, reward }) =>
+      (!mode.value || mode.value === battleMode) &&
+      (boss + (reward ?? '')).toLowerCase().replace(/\s+/g, '').includes(query)
+    );
+
+    results.innerHTML = filtered.map(({ mode: battleMode, boss, reward, catchCp, boostedCp, href }) => {
+      const boosted = boostedCp === null ? '적용 없음' : boostedCp.toLocaleString('ko-KR') + ' CP';
+      const source = new URL(href, 'https://pokemongohub.net/').href;
+      return '<article class="pokemon"><h3>' + boss + '</h3><span class="pill">' + battleMode +
+        '</span>' + (reward ? '<p>포획 형태 ' + reward + '</p>' : '') +
+        '<p>기본 <strong>' + catchCp.toLocaleString('ko-KR') + ' CP</strong> · 날씨 부스트 <strong>' + boosted +
+        '</strong></p><a href="' + source + '" target="_blank" rel="noopener noreferrer">CP 출처</a></article>';
+    }).join('') || '<p class="empty">확인된 포획 CP가 없습니다.</p>';
+  }
+
+  mode.addEventListener('change', renderCatchCp);
+  search.addEventListener('input', renderCatchCp);
+  renderCatchCp();
+})();
+</script><section class="panel" id="schedulePanel" hidden><h2>현재 레이드와 이벤트</h2><button id="refreshSchedule" type="button">일정 다시 확인</button><p id="scheduleStatus" role="status"></p><div id="activeRaids" class="cards"></div><h3>예정 이벤트</h3><ul id="eventList"></ul><p><a href="https://leekduck.com/events/">Leek Duck 이벤트 전체 보기</a> · <a href="https://pokemongo.com/news/?hl=ko">Pokémon GO 공식 소식</a></p></section><section class="panel" id="maxPanel" hidden><h2>맥스배틀 공격수</h2><div class="actions"><a href="https://db.pokemongohub.net/best/dynamax-attackers-per-type">18타입 공격수 순위</a><a href="https://db.pokemongohub.net/best/dynamax-tanks-per-type">보스 공격 타입별 탱커 순위</a></div><p class="note">지원은 다이월로 피해를 줄이거나 다이리커버리로 아군을 회복하는 역할입니다. 탱커로 게이지를 모으고 다이맥스 턴에 공격수로 교대할 수 있습니다. 보스별 치유·방어·공격 추천은 <a href="https://db.pokemongohub.net/">포켓몬별 Max Battle 카운터</a>에서 확인하실 수 있습니다.</p><div class="cards"><article class="pokemon"><h3>거다이맥스 리자몽</h3><p>불꽃 공격</p><a href="https://db.pokemongohub.net/pokemon/6-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>다이맥스 펄기아</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/484-Dynamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>거다이맥스 두랄루돈</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/884-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article></div></section><section class="panel" id="rankPanel">
+    <h2>레이드 공격수 순위</h2><label for="raidType">공격 타입</label><select id="raidType" disabled><option value="">전체 타입</option></select><label for="raidForm">공격수 형태</label><select id="raidForm"><option value="">전체 형태</option><option value="normal">일반</option><option value="shadow">그림자</option><option value="mega">메가</option><option value="primal">원시</option></select><label for="raidMetric">정렬 지표</label><select id="raidMetric"><option value="dps">DPS · 초당 피해량</option><option value="tdo">TDO · 기절 전 총 피해량</option></select>
+    <p class="note">40레벨·15/15/15 기준입니다. 공격은 기준 상대의 방어력 180, 방어는 기준 상대의 공격력 180과 초당 위력 40을 가정합니다. 자속과 그림자 공격·방어 보정, 기술 위력·시간·에너지를 반영합니다. TDO는 DPS × 예상 생존 시간입니다. 실제 레이드에서는 보스 기술·날씨·파티 구성과 회피에 따라 달라집니다. †는 데이터에 등록된 대단한 기술머신 기술입니다. 일반 폼의 출시는 종 단위로 확인되며, 메가 및 원시 폼은 공급처의 데이터 기준입니다.</p>
     <input id="raid500Search" type="search" placeholder="이름으로 검색" aria-label="500위 목록 검색" hidden>
-    <p id="raid500Status" role="status"></p>
+    <p id="raid500Status" role="status"></p><p id="raidSourcesStatus" class="small"></p>
     <div id="raid500List" class="rank-list"></div>
     <button id="raid500More" type="button" class="secondary" hidden>50개 더 보기</button>
     <p class="small">데이터 · PoGo API / 이름과 이미지 · PokéAPI</p>
@@ -24,12 +76,12 @@
   <div id="counterResult"></div>
   <p class="note">현재 출현 목록과 별개로 보스를 검색할 수 있어요. 카운터 상위 20개는 기술 상성, 자속, 공격 주기와 내구도를 반영한 참고 순위예요. 타입 필터는 차지 기술 기준입니다. 메가·그림자 공격자, 보스 기술, 날씨, 파티 파워는 계산에서 제외합니다. 일부 기술은 대단한 기술머신이 필요할 수 있어요.</p>
 </section>
-<div id="minePanel"><section class="panel"><h2 id="formTitle">포켓몬 등록</h2><form id="form"><div class="fields"><label>포켓몬 이름<input id="name" list="names" placeholder="예: 레어코일" required autocomplete="off"><datalist id="names"></datalist></label><label>공격 IV (0~15)<input id="atk" type="number" min="0" max="15" value="15" required></label><label>방어 IV (0~15)<input id="def" type="number" min="0" max="15" value="15" required></label><label>HP IV (0~15)<input id="hp" type="number" min="0" max="15" value="15" required></label><label>상태<select id="formState"><option value="normal">일반</option><option value="shadow">그림자</option><option value="purified">정화</option></select></label><label>현재 CP<input id="cp" type="number" min="10" max="10000" placeholder="선택 입력"></label><label>노말 기술<input id="fast" placeholder="예: 전기쇼크"></label><label>스페셜 기술<input id="charged" placeholder="예: 와일드볼트"></label></div><div class="actions"><button type="submit" id="save">도감에 추가</button><button type="button" class="secondary hidden" id="cancel">수정 취소</button></div></form><p class="small">이름은 추천 목록에서 선택하실 수 있습니다. 목록에 없는 포켓몬도 등록 가능하지만, 레이드 성능은 '미평가'로 표시됩니다.</p></section><section class="panel"><h2>내 포켓몬</h2><div class="toolbar"><input id="search" placeholder="이름·기술 검색" aria-label="검색"><select id="typeFilter" aria-label="타입 필터"><option value="">전체 타입</option></select><select id="stateFilter" aria-label="상태 필터"><option value="">전체 상태</option><option value="shadow">그림자</option><option value="normal">일반</option><option value="purified">정화</option></select><select id="sort" aria-label="정렬"><option value="score">추천순</option><option value="iv">IV 높은순</option><option value="name">이름순</option><option value="new">최근 등록순</option></select></div><div class="cards" id="cards"></div><div class="actions"><button class="secondary" id="export">JSON 백업</button><button class="secondary" id="importBtn">JSON 복원</button><input id="import" type="file" accept="application/json" class="hidden"><button class="secondary" id="demo">예시 3개 넣기</button></div></section><section class="panel"><h2>선택 포켓몬 비교 (최대 3마리)</h2><div id="comparison" class="compare"><p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p></div></section><section class="panel"><h2>평가 기준과 주의사항</h2><p class="note">레이드 기본 활용도는 주요 포켓몬의 공개 공격자 순위를 참고해 만든 <b>수동 편집 참고 등급(0~100)</b>입니다. 게임의 공식 수치나 실제 DPS가 아닙니다. 육성 점수 = 기본 활용도 75% + IV 점수 20% + 기술 입력 적합성 보정 최대 5점입니다. 기술의 적합성은 일부 등록된 추천 기술만 확인하며, 미입력 기술은 감점하지 않습니다. 그림자 개체는 별도의 기초 등급이 있는 경우 이를 사용하며, 단순히 그림자라는 이유만으로 가산하지 않습니다. 진화 가능성은 일부 종에만 수록했습니다. 미수록 종의 진화·기술은 직접 확인해야 합니다.</p><p class="note">'최우선'은 85점 이상, '육성 후보'는 70점 이상, '상황별'은 55점 이상입니다. IV가 좋아도 종 자체의 레이드 성능이 낮으면 육성을 추천하지 않습니다. 한정 기술, 메가에너지, 사탕과 별의모래 비용, 레이드 보스 상성은 별도로 고려해야 합니다.</p><p class="small">참고: <a style="color:#8bd7ff" href="https://db.pokemongohub.net/best/raid-attackers" target="_blank" rel="noopener">GO Hub 레이드 공격자 순위</a> · 2026-11-06 확인. 자료 자동 갱신 기능은 없습니다. 데이터는 브라우저 내부 저장소에만 저장됩니다. 브라우저 데이터 삭제 시 사라질 수 있으니 JSON 백업을 권장합니다.</p></section></div></main><script>
+<div id="minePanel"><section class="panel"><h2 id="formTitle">포켓몬 등록</h2><form id="form"><div class="fields"><label>포켓몬 이름<input id="name" list="names" placeholder="예: 레어코일" required autocomplete="off"><datalist id="names"></datalist></label><label>공격 IV (0~15)<input id="atk" type="number" min="0" max="15" value="15" required></label><label>방어 IV (0~15)<input id="def" type="number" min="0" max="15" value="15" required></label><label>HP IV (0~15)<input id="hp" type="number" min="0" max="15" value="15" required></label><label>상태<select id="formState"><option value="normal">일반</option><option value="shadow">그림자</option><option value="purified">정화</option></select></label><label>현재 CP<input id="cp" type="number" min="10" max="10000" placeholder="선택 입력"></label><label>노말 기술<input id="fast" placeholder="예: 전기쇼크"></label><label>스페셜 기술<input id="charged" placeholder="예: 와일드볼트"></label></div><div class="actions"><button type="submit" id="save">도감에 추가</button><button type="button" class="secondary hidden" id="cancel">수정 취소</button></div></form><p class="small">이름은 추천 목록에서 선택하실 수 있습니다. 목록에 없는 포켓몬도 등록할 수 있습니다. 육성할 개체는 등록 후 우선으로 지정하세요.</p></section><section class="panel"><h2>내 포켓몬</h2><div class="toolbar"><input id="search" placeholder="이름·기술 검색" aria-label="검색"><select id="typeFilter" aria-label="타입 필터"><option value="">전체 타입</option></select><select id="stateFilter" aria-label="상태 필터"><option value="">전체 상태</option><option value="shadow">그림자</option><option value="normal">일반</option><option value="purified">정화</option></select><select id="sort" aria-label="정렬"><option value="priority">내 육성 우선순</option><option value="iv">IV 높은순</option><option value="name">이름순</option><option value="new">최근 등록순</option></select></div><div class="cards" id="cards"></div><div class="actions"><button class="secondary" id="export">JSON 백업</button><button class="secondary" id="importBtn">JSON 복원</button><input id="import" type="file" accept="application/json" class="hidden"><button class="secondary" id="demo">예시 3개 넣기</button></div></section><section class="panel"><h2>선택 포켓몬 비교 (최대 3마리)</h2><div id="comparison" class="compare"><p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p></div></section><section class="panel"><h2>내 육성 우선순위</h2><p class="note">직접 우선으로 지정한 개체를 먼저 표시합니다. 같은 우선순위에서는 IV 합계가 높은 순서로 표시합니다. 도감은 현재 브라우저에 저장되며 JSON으로 백업할 수 있습니다.</p></section></div></main><script>
 'use strict';
-// Conservative curated examples; scores are editorial heuristics, not combat simulation.
+// Local names and evolution hints.
 const catalog=[
-['뮤츠','에스퍼',96,99,'사이코커터','사이코브레이크'],['레쿠쟈','드래곤',94,94,'드래곤테일','화룡점정'],['네크로즈마(새벽의 날개)','고스트',96,96,'사이코커터','섀도레이'],['네크로즈마(황혼의 갈기)','강철',91,91,'사이코커터','메테오드라이브'],['검왕 자시안','강철',97,97,'메탈클로','거수참'],['방패왕 자마젠타','강철',78,78,'메탈클로','거수탄'],['블랙큐레무','드래곤',95,95,'드래곤테일','프리즈볼트'],['화이트큐레무','얼음',94,94,'얼음엄니','콜드플레어'],['레시라무','불꽃',89,93,'불꽃엄니','크로스플레임'],['제크로무','전기',88,91,'차지빔','크로스썬더'],['가이오가','물',90,90,'폭포오르기','근원의파동'],['그란돈','땅',91,92,'머드샷','단애의칼'],['랜드로스(영물폼)','땅',88,88,'머드샷','열사의폭풍'],['랜드로스(화신폼)','땅',65,71,'머드샷','대지의힘'],['기라티나(오리진폼)','고스트',83,85,'섀도클로','섀도다이브'],['기라티나(어나더폼)','고스트',48,51,'섀도클로','섀도다이브'],['디아루가','강철',80,80,'메탈클로','아이언헤드'],['펄기아','드래곤',81,81,'드래곤테일','용성군'],['망나뇽','드래곤',81,87,'드래곤테일','역린'],['한카리아스','땅',86,91,'머드샷','대지의힘'],['마기라스','악',86,91,'물기','세차게휘두르기'],['거대코뿌리','바위',86,94,'떨어뜨리기','암석포'],['메타그로스','강철',88,94,'불릿펀치','코멧펀치'],['맘모꾸리','얼음',86,92,'눈싸라기','눈사태'],['샹델라','고스트',83,89,'병상첨병','섀도볼'],['루카리오','격투',86,86,'발경','파동탄'],['테라키온','격투',87,87,'두번차기','성스러운칼'],['리자몽','불꽃',73,73,'회오리불꽃','블라스트번'],['자포코일','전기',77,84,'스파크','와일드볼트'],['레어코일','전기',39,43,'전기쇼크','방전','자포코일'],['코일','전기',20,25,'전기쇼크','방전','레어코일'],['롱스톤','바위',19,20,'돌떨구기','스톤샤워','강철톤'],['강철톤','강철',35,35,'아이언테일','헤비봄버'],['잠만보','노말',23,23,'핥기','누르기'],['이브이','노말',18,18,'전광석화','구멍파기'],['저승갓숭','격투',62,62,'카운터','인파이트'],['팬텀','고스트',78,78,'섀도클로','섀도볼'],['가디안','페어리',82,87,'애교부리기','매지컬샤인'],['보만다','드래곤',80,91,'드래곤테일','역린'],['램펄드','바위',85,91,'떨어뜨리기','스톤샤워'],['전수목','전기',87,87,'전기쇼크','방전'],['라이코','전기',81,89,'전기쇼크','와일드볼트'],['몰드류','땅',82,88,'진흙뿌리기','열사의대지'],['삼삼드래','악',85,91,'물기','세차게휘두르기'],['가라르 불비달마','얼음',88,88,'얼음엄니','눈사태']
-].map(([name,type,base,shadow,fast,charged,evolve])=>({name,type,base,shadow,fast,charged,evolve}));
+['뮤츠','에스퍼'],['레쿠쟈','드래곤'],['네크로즈마(새벽의 날개)','고스트'],['네크로즈마(황혼의 갈기)','강철'],['검왕 자시안','강철'],['방패왕 자마젠타','강철'],['블랙큐레무','드래곤'],['화이트큐레무','얼음'],['레시라무','불꽃'],['제크로무','전기'],['가이오가','물'],['그란돈','땅'],['랜드로스(영물폼)','땅'],['랜드로스(화신폼)','땅'],['기라티나(오리진폼)','고스트'],['기라티나(어나더폼)','고스트'],['디아루가','강철'],['펄기아','드래곤'],['망나뇽','드래곤'],['한카리아스','땅'],['마기라스','악'],['거대코뿌리','바위'],['메타그로스','강철'],['맘모꾸리','얼음'],['샹델라','고스트'],['루카리오','격투'],['테라키온','격투'],['리자몽','불꽃'],['자포코일','전기'],['레어코일','전기','자포코일'],['코일','전기','레어코일'],['롱스톤','바위','강철톤'],['강철톤','강철'],['잠만보','노말'],['이브이','노말'],['저승갓숭','격투'],['팬텀','고스트'],['가디안','페어리'],['보만다','드래곤'],['램펄드','바위'],['전수목','전기'],['라이코','전기'],['몰드류','땅'],['삼삼드래','악'],['가라르 불비달마','얼음']
+].map(([name,type,evolve])=>({name,type,evolve}));
 const $=id=>document.getElementById(id);let entries=[],editing=null,compare=new Set();const key='raid-dex-v1';try{const saved=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(saved))entries=saved.filter(x=>x&&typeof x.name==='string').slice(0,1000)}catch{};
 const spriteIds = new Map([
   ['뮤츠',150],
@@ -83,12 +135,14 @@ function pokemonSprite(name) {
   if (!id) return '';
   return `<img class="pokemon-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png" alt="" width="48" height="48" loading="lazy" decoding="async" onerror="this.hidden=true">`;
 }
-const clean=s=>String(s??'').trim();const esc=s=>clean(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const lookup=n=>catalog.find(x=>x.name.toLowerCase()===clean(n).toLowerCase());const iv=x=>Number(x.atk)+Number(x.def)+Number(x.hp);const calc=x=>{let p=lookup(x.name);if(!p)return null;let base=x.state==='shadow'?p.shadow:p.base;let tech=0;if(clean(x.fast)&&clean(x.fast)===p.fast)tech+=2;if(clean(x.charged)&&clean(x.charged)===p.charged)tech+=3;return Math.min(100,Math.round(base*.75+(iv(x)/45*100)*.20+tech))};const grade=s=>s===null?'미평가':s>=85?'최우선':s>=70?'육성 후보':s>=55?'상황별':'보류';const advise=x=>{let p=lookup(x.name),s=calc(x);if(!p)return '기본 레이드 데이터가 없어 평가할 수 없습니다.';if(p.evolve)return `진화 후보: ${p.evolve}. 진화 후 기술과 사탕 비용을 확인하세요.`;if(s>=85)return '레이드 주력 육성 후보. 기술과 타입별 보유 전력을 확인하세요.';if(s>=70)return '타입별 전력이 부족하면 육성을 고려하세요.';return '별의모래 투자는 보류하고 더 좋은 공격자를 우선 검토하세요.'};function persist(){localStorage.setItem(key,JSON.stringify(entries))};function render(){let q=clean($('search').value).toLowerCase(),type=$('typeFilter').value,state=$('stateFilter').value;let list=entries.filter(x=>(x.name+' '+x.fast+' '+x.charged).toLowerCase().includes(q)&&(!type||lookup(x.name)?.type===type)&&(!state||x.state===state));let sort=$('sort').value;list.sort((a,b)=>sort==='iv'?iv(b)-iv(a):sort==='name'?a.name.localeCompare(b.name,'ko'):sort==='new'?b.created-a.created:(calc(b)??-1)-(calc(a)??-1));$('count').textContent=entries.length;$('priority').textContent=entries.filter(x=>(calc(x)??0)>=85).length;$('selected').textContent=compare.size+'/3';$('cards').innerHTML=list.length?list.map(x=>{let s=calc(x),p=lookup(x.name);return `<article class="pokemon"><div class="top"><div><h3>${pokemonSprite(p?.name)}${esc(x.name)}</h3><span class="pill">${esc(p?.type||'타입 미등록')}</span><span class="pill">${x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'}</span><span class="pill">${grade(s)}</span></div><div class="score">${s===null?'—':s}<div class="small">참고 점수</div></div></div><p class="note">IV ${x.atk}/${x.def}/${x.hp} (${Math.round(iv(x)/45*100)}%)${x.cp?' · CP '+x.cp:''}<br>기술: ${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}</p><p class="note">${esc(advise(x))}</p><div class="actions"><label class="check"><input type="checkbox" data-action="compare" data-id="${esc(x.id)}" ${compare.has(x.id)?'checked':''} ${!compare.has(x.id)&&compare.size>=3?'disabled':''}> 비교</label><button class="secondary" data-action="edit" data-id="${esc(x.id)}">수정</button><button class="danger" data-action="delete" data-id="${esc(x.id)}">삭제</button></div></article>`}).join(''):'<p class="empty">조건에 맞는 포켓몬이 없습니다.</p>';let chosen=entries.filter(x=>compare.has(x.id));$('comparison').innerHTML=chosen.length?`<table><thead><tr><th>항목</th>${chosen.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>${[['상태',x=>x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'],['IV',x=>`${x.atk}/${x.def}/${x.hp}`],['IV 합계',x=>`${iv(x)}/45`],['기술',x=>`${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}`],['참고 점수',x=>calc(x)??'미평가'],['추천',x=>grade(calc(x))],['판단',x=>esc(advise(x))]].map(([title,fn])=>`<tr><th>${title}</th>${chosen.map(x=>`<td>${fn(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p>'};
-$('form').onsubmit=e=>{e.preventDefault();let name=clean($('name').value);let nums=['atk','def','hp'].map(k=>Number($(k).value));if(!name||nums.some(v=>!Number.isInteger(v)||v<0||v>15)){alert('이름과 IV(0~15)를 확인하세요.');return}let data={name,atk:nums[0],def:nums[1],hp:nums[2],state:$('formState').value,cp:clean($('cp').value),fast:clean($('fast').value),charged:clean($('charged').value)};if(editing){let i=entries.findIndex(x=>x.id===editing);if(i>=0)entries[i]={...entries[i],...data}}else entries.push({...data,id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),created:Date.now()});persist();reset();render()};function reset(){editing=null;$('form').reset();['atk','def','hp'].forEach(id=>$(id).value=15);$('save').textContent='도감에 추가';$('formTitle').textContent='포켓몬 등록';$('cancel').classList.add('hidden')};$('cancel').onclick=reset;$('cards').addEventListener('click',e=>{let b=e.target.closest('[data-action]');if(!b)return;let id=b.dataset.id,x=entries.find(z=>z.id===id);if(!x)return;if(b.dataset.action==='delete'){if(confirm(x.name+'을(를) 삭제할까요?')){entries=entries.filter(z=>z.id!==id);compare.delete(id);persist();render()}}else if(b.dataset.action==='edit'){editing=id;['name','atk','def','hp','cp','fast','charged'].forEach(k=>$(k).value=x[k]??'');$('formState').value=x.state;$('save').textContent='수정 저장';$('formTitle').textContent='포켓몬 수정';$('cancel').classList.remove('hidden');$('form').scrollIntoView({behavior:'smooth'})}});$('cards').addEventListener('change',e=>{if(e.target.dataset.action!=='compare')return;let id=e.target.dataset.id;if(e.target.checked){if(compare.size<3)compare.add(id)}else compare.delete(id);render()});['search','typeFilter','stateFilter','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));$('export').onclick=()=>{let blob=new Blob([JSON.stringify({version:1,entries},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pokemon-raid-dex-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};$('importBtn').onclick=()=>$('import').click();$('import').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data.entries))throw Error('형식 오류');let valid=data.entries.slice(0,1000).filter(x=>x&&typeof x.name==='string'&&['normal','shadow','purified'].includes(x.state)&&['atk','def','hp'].every(k=>Number.isInteger(Number(x[k]))&&Number(x[k])>=0&&Number(x[k])<=15)).map((x,i)=>({...x,id:String(x.id||'import'+i),created:Number(x.created)||Date.now()}));if(!confirm(`유효한 ${valid.length}개 항목으로 현재 도감을 교체할까요?`))return;entries=valid;compare.clear();persist();render()}catch{alert('올바른 백업 파일이 아닙니다.')}e.target.value=''};$('demo').onclick=()=>{if(entries.length&&!confirm('기존 목록에 예시 3개를 추가할까요?'))return;[['레어코일',15,15,14,'normal'],['망나뇽',15,13,15,'normal'],['거대코뿌리',14,15,15,'shadow']].forEach(([name,atk,def,hp,state],i)=>entries.push({id:'demo'+Date.now()+i,created:Date.now()+i,name,atk,def,hp,state,cp:'',fast:'',charged:''}));persist();render()};$('names').innerHTML=catalog.map(x=>`<option value="${esc(x.name)}">`).join('');$('typeFilter').innerHTML+=[...new Set(catalog.map(x=>x.type))].sort((a,b)=>a.localeCompare(b,'ko')).map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');render();
+const clean=s=>String(s??'').trim();const esc=s=>clean(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const lookup=n=>catalog.find(x=>x.name.toLowerCase()===clean(n).toLowerCase());const iv=x=>Number(x.atk)+Number(x.def)+Number(x.hp);function persist(){localStorage.setItem(key,JSON.stringify(entries))};function render(){let q=clean($('search').value).toLowerCase(),type=$('typeFilter').value,state=$('stateFilter').value;let list=entries.filter(x=>(x.name+' '+x.fast+' '+x.charged).toLowerCase().includes(q)&&(!type||lookup(x.name)?.type===type)&&(!state||x.state===state));let sort=$('sort').value;list.sort((a,b)=>sort==='iv'?iv(b)-iv(a):sort==='name'?a.name.localeCompare(b.name,'ko'):sort==='new'?b.created-a.created:Number(b.priority===true)-Number(a.priority===true)||iv(b)-iv(a));$('count').textContent=entries.length;$('priority').textContent=entries.filter(x=>x.priority===true).length;$('selected').textContent=compare.size+'/3';$('cards').innerHTML=list.length?list.map(x=>{let p=lookup(x.name);return `<article class="pokemon"><div class="top"><div><h3>${pokemonSprite(p?.name)}${esc(x.name)}</h3><span class="pill">${esc(p?.type||'타입 미등록')}</span><span class="pill">${x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'}</span>${x.priority===true?'<span class="pill">우선 육성</span>':''}</div></div><p class="note">IV ${x.atk}/${x.def}/${x.hp} (${Math.round(iv(x)/45*100)}%)${x.cp?' · CP '+esc(x.cp):''}<br>기술: ${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}</p>${p?.evolve?'<p class="note">진화 후보 · '+esc(p.evolve)+'</p>':''}<div class="actions"><label class="check"><input type="checkbox" data-action="compare" data-id="${esc(x.id)}" ${compare.has(x.id)?'checked':''} ${!compare.has(x.id)&&compare.size>=3?'disabled':''}> 비교</label><button type="button" class="secondary" data-action="priority" aria-pressed="${x.priority===true}" data-id="${esc(x.id)}">${x.priority===true?'우선 지정 해제':'우선 육성 지정'}</button><button class="secondary" data-action="edit" data-id="${esc(x.id)}">수정</button><button class="danger" data-action="delete" data-id="${esc(x.id)}">삭제</button></div></article>`}).join(''):'<p class="empty">조건에 맞는 포켓몬이 없습니다.</p>';let chosen=entries.filter(x=>compare.has(x.id));$('comparison').innerHTML=chosen.length?`<table><thead><tr><th>항목</th>${chosen.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>${[['상태',x=>x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'],['IV',x=>`${x.atk}/${x.def}/${x.hp}`],['IV 합계',x=>`${iv(x)}/45`],['기술',x=>`${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}`],['내 육성 우선순위',x=>x.priority===true?'우선':'미지정']].map(([title,fn])=>`<tr><th>${title}</th>${chosen.map(x=>`<td>${fn(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p>'};
+$('form').onsubmit=e=>{e.preventDefault();let name=clean($('name').value);let nums=['atk','def','hp'].map(k=>Number($(k).value));if(!name||nums.some(v=>!Number.isInteger(v)||v<0||v>15)){alert('이름과 IV(0~15)를 확인하세요.');return}let data={name,atk:nums[0],def:nums[1],hp:nums[2],state:$('formState').value,cp:clean($('cp').value),fast:clean($('fast').value),charged:clean($('charged').value)};if(editing){let i=entries.findIndex(x=>x.id===editing);if(i>=0)entries[i]={...entries[i],...data}}else entries.push({...data,id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),created:Date.now()});persist();reset();render()};function reset(){editing=null;$('form').reset();['atk','def','hp'].forEach(id=>$(id).value=15);$('save').textContent='도감에 추가';$('formTitle').textContent='포켓몬 등록';$('cancel').classList.add('hidden')};$('cancel').onclick=reset;$('cards').addEventListener('click',e=>{let b=e.target.closest('[data-action]');if(!b)return;let id=b.dataset.id,x=entries.find(z=>z.id===id);if(!x)return;if(b.dataset.action==='priority'){x.priority=x.priority!==true;persist();render()}else if(b.dataset.action==='delete'){if(confirm(x.name+'을(를) 삭제할까요?')){entries=entries.filter(z=>z.id!==id);compare.delete(id);persist();render()}}else if(b.dataset.action==='edit'){editing=id;['name','atk','def','hp','cp','fast','charged'].forEach(k=>$(k).value=x[k]??'');$('formState').value=x.state;$('save').textContent='수정 저장';$('formTitle').textContent='포켓몬 수정';$('cancel').classList.remove('hidden');$('form').scrollIntoView({behavior:'smooth'})}});$('cards').addEventListener('change',e=>{if(e.target.dataset.action!=='compare')return;let id=e.target.dataset.id;if(e.target.checked){if(compare.size<3)compare.add(id)}else compare.delete(id);render()});['search','typeFilter','stateFilter','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));$('export').onclick=()=>{let blob=new Blob([JSON.stringify({version:1,entries},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pokemon-raid-dex-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};$('importBtn').onclick=()=>$('import').click();$('import').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data.entries))throw Error('형식 오류');let valid=data.entries.slice(0,1000).filter(x=>x&&typeof x.name==='string'&&['normal','shadow','purified'].includes(x.state)&&['atk','def','hp'].every(k=>Number.isInteger(Number(x[k]))&&Number(x[k])>=0&&Number(x[k])<=15)).map((x,i)=>({...x,id:String(x.id||'import'+i),created:Number(x.created)||Date.now()}));if(!confirm(`유효한 ${valid.length}개 항목으로 현재 도감을 교체할까요?`))return;entries=valid;compare.clear();persist();render()}catch{alert('올바른 백업 파일이 아닙니다.')}e.target.value=''};$('demo').onclick=()=>{if(entries.length&&!confirm('기존 목록에 예시 3개를 추가할까요?'))return;[['레어코일',15,15,14,'normal'],['망나뇽',15,13,15,'normal'],['거대코뿌리',14,15,15,'shadow']].forEach(([name,atk,def,hp,state],i)=>entries.push({id:'demo'+Date.now()+i,created:Date.now()+i,name,atk,def,hp,state,cp:'',fast:'',charged:''}));persist();render()};$('names').innerHTML=catalog.map(x=>`<option value="${esc(x.name)}">`).join('');$('typeFilter').innerHTML+=[...new Set(catalog.map(x=>x.type))].sort((a,b)=>a.localeCompare(b,'ko')).map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');render();
 
-function showTab(which){$('counterPanel').classList.toggle('hidden',which!=='counter');$('tabCounter').classList.toggle('secondary',which!=='counter');$('rankPanel').classList.toggle('hidden',which!=='ranks');$('minePanel').classList.toggle('hidden',which!=='mine');$('tabRanks').classList.toggle('secondary',which!=='ranks');$('tabMine').classList.toggle('secondary',which!=='mine')}
+function showTab(which){$('schedulePanel').hidden=which!=='schedule';$('tabSchedule').classList.toggle('secondary',which!=='schedule');$('catchCpPanel').hidden=which!=='cp';$('maxPanel').hidden=which!=='max';$('tabCp').classList.toggle('secondary',which!=='cp');$('tabMax').classList.toggle('secondary',which!=='max');$('counterPanel').classList.toggle('hidden',which!=='counter');$('tabCounter').classList.toggle('secondary',which!=='counter');$('rankPanel').classList.toggle('hidden',which!=='ranks');$('minePanel').classList.toggle('hidden',which!=='mine');$('tabRanks').classList.toggle('secondary',which!=='ranks');$('tabMine').classList.toggle('secondary',which!=='mine')}
 $('tabRanks').onclick=()=>showTab('ranks');
 $('tabMine').onclick=()=>showTab('mine');
+$('tabCp').onclick=()=>showTab('cp');
+$('tabMax').onclick=()=>showTab('max');
 showTab('ranks');
 </script><script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script><script>
 async function loadDailyUpdates() {
@@ -103,6 +157,13 @@ async function loadDailyUpdates() {
     if (!Array.isArray(data.items)) throw new Error('invalid data');
     status.textContent = '마지막 확인: ' + (data.checked_at || '확인 불가') +
       (data.status === 'ok' ? ' · 확인 완료' : ' · 최신 수집 실패');
+    const list = $('newsItems');
+    list.replaceChildren(...data.items.slice(0,6).flatMap(item => {
+      try { const url = new URL(item.url || item.link); if (url.protocol !== 'https:') return [];
+        const li=document.createElement('li'); const a=document.createElement('a');
+        a.href=url.href;a.textContent=item.title;a.target='_blank';a.rel='noopener noreferrer';li.append(a);return [li];
+      } catch { return []; }
+    }));
   } catch {
     status.textContent = '업데이트 정보를 불러올 수 없습니다.';
   } finally {
@@ -118,6 +179,20 @@ const raidStatus = document.getElementById('raid500Status');
 const raidMore = document.getElementById('raid500More');
 let rankedRaidSpecies = [];
 let raidLimit = 50;
+let raidRankData;
+const raidType = document.getElementById('raidType');
+const raidForm = $('raidForm');
+const raidMetric = $('raidMetric');
+let raidTypes;
+function setRaidType() {
+  if (!raidRankData) return;
+  rankedRaidSpecies = calculateRaid500(...raidRankData, {
+    chargedType:raidType.value, variant:raidForm.value, metric:raidMetric.value, typesByForm:raidTypes
+  });
+  raidLimit = 50;
+  showRaid500();
+}
+[raidType,raidForm,raidMetric].forEach(select => select.addEventListener('change',setRaidType));
 
 const formLabels = {
   altered:'어나더폼', origin:'오리진폼', incarnate:'화신폼', therian:'영물폼',
@@ -146,7 +221,7 @@ const formSprites = {
 const formOf = row => String(row.form || 'normal').toLowerCase().replace(/[ -]+/g, '_');
 const speciesId = row => Number(row.pokemon_id ?? row.id);
 const formKey = row => speciesId(row) + ':' + formOf(row);
-const eligibleForm = row => formOf(row) === 'normal' || Object.hasOwn(formLabels, formOf(row));
+const eligibleForm = row => row.variant || formOf(row) === 'normal' || Object.hasOwn(formLabels, formOf(row));
 
 function calculateRaid500(stats, pools, fast, charged, released, names, options = {}) {
   const index = (rows, key) => new Map(rows.map(row => [key(row), row]));
@@ -155,25 +230,32 @@ function calculateRaid500(stats, pools, fast, charged, released, names, options 
   const chargedByName = index(charged, row => row.name);
   const result = [];
   for (const row of index(stats.filter(eligibleForm), formKey).values()) {
+    if (options.variant && (row.variant || 'normal') !== options.variant) continue;
     const id = speciesId(row);
     const form = formOf(row);
     const key = formKey(row);
-    const pool = poolsByForm.get(key);
+    const pool = poolsByForm.get(row.poolKey || key);
     if (!Object.hasOwn(released, id) || !pool) continue;
     let best = null;
     const fastNames = [...(pool.fast_moves || []), ...(pool.elite_fast_moves || [])];
     const chargedNames = [...(pool.charged_moves || []), ...(pool.elite_charged_moves || [])];
     for (const fastName of fastNames) {
       const f = fastByName.get(fastName);
-      if (!(f?.energy_delta > 0 && f.duration > 0)) continue;
+      if (!(f?.energy_delta > 0 && f.duration > 0) || fastName === "Transform") continue;
       for (const chargedName of chargedNames) {
         const c = chargedByName.get(chargedName);
         if (!(c?.energy_delta < 0 && c.duration > 0)) continue;
         const uses = Math.ceil(-c.energy_delta / f.energy_delta);
         let fastMultiplier = 1;
         let chargedMultiplier = 1;
+        if (options.chargedType && options.chargedType !== c.type) continue;
+        if (!options.bossTypes && options.typesByForm) {
+          const attackerTypes = row.type || options.typesByForm.get(row.poolKey || key) || [];
+          if (attackerTypes.includes(c.type)) chargedMultiplier = 1.2;
+          if (attackerTypes.includes(f.type)) fastMultiplier = 1.2;
+        }
         if (options.bossTypes) {
-          const attackerTypes = options.typesByForm.get(key);
+          const attackerTypes = row.type || options.typesByForm.get(row.poolKey || key);
           if (!attackerTypes || (options.chargedType && options.chargedType !== c.type)) continue;
           chargedMultiplier = damageMultiplier(options.chart,c.type,options.bossTypes);
           if (chargedMultiplier <= 1.001) continue;
@@ -181,21 +263,29 @@ function calculateRaid500(stats, pools, fast, charged, released, names, options 
           if (attackerTypes.includes(f.type)) fastMultiplier *= 1.2;
           if (attackerTypes.includes(c.type)) chargedMultiplier *= 1.2;
         }
-        const rate = 1000 * (uses * Number(f.power) * fastMultiplier + Number(c.power) * chargedMultiplier) / (uses * Number(f.duration) + Number(c.duration));
-        const score = rate * (Number(row.base_attack) + 15) / 100 *
-          (((Number(row.base_defense) + 15) * (Number(row.base_stamina) + 15)) / 40000) ** 0.25;
+        const shadow = row.variant === 'shadow' ? 1.2 : 1;
+        const cpm = 0.79030001;
+        const attack = (Number(row.base_attack) + 15) * cpm * shadow;
+        const defense = (Number(row.base_defense) + 15) * cpm / shadow;
+        const hp = Math.floor((Number(row.base_stamina) + 15) * cpm);
+        const damage = (power, multiplier) => Math.floor(0.5 * power * attack / 180 * multiplier) + 1;
+        const dps = 1000 * (uses * damage(f.power, fastMultiplier) + damage(c.power, chargedMultiplier)) /
+          (uses * f.duration + c.duration);
+        const tdo = dps * hp / (0.5 * 40 * 180 / defense);
+        const score = options.metric === 'tdo' ? tdo : dps;
         if (Number.isFinite(score) && score > 0 && (!best || score > best.score)) {
-          best = {score, fastName, chargedName, fastType:f.type, chargedType:c.type};
+          best = {score,dps,tdo,fastName,chargedName,fastType:f.type,chargedType:c.type,
+            eliteFast:pool.elite_fast_moves?.includes(fastName),eliteCharged:pool.elite_charged_moves?.includes(chargedName)};
         }
       }
     }
     if (!best) continue;
     const english = row.pokemon_name || row.name || '#' + id;
-    const label = form === 'normal' ? '' : ' (' + formLabels[form] + ')';
+    const label = formLabels[form] ? ' (' + formLabels[form] + ')' : '';
     result.push({...best, id, form, sprite:formSprites[key] || id, english:english + ' ' + form,
-      name:(names.get(id) || english) + label});
+      name:row.displayName || (row.variant === 'shadow' ? '그림자 ' : '') + (names.get(id) || english) + label});
   }
-  return result.sort((a,b) => b.score - a.score || a.id - b.id || a.form.localeCompare(b.form)).slice(0,options.limit ?? 500)
+  return result.sort((a,b) => b.score - a.score || a.id - b.id || a.form.localeCompare(b.form)).slice(0,options.limit ?? result.length)
     .map((row,i) => ({...row, rank:i + 1}));
 }
 
@@ -203,9 +293,9 @@ function showRaid500() {
   const query = raidSearch.value.trim().toLowerCase();
   const filtered = rankedRaidSpecies.filter(row =>
     row.name.toLowerCase().includes(query) || row.english.toLowerCase().includes(query));
-  raidStatus.textContent = '수록 ' + rankedRaidSpecies.length + '개 폼 · 검색 결과 ' + filtered.length + '개';
+  raidStatus.textContent = (rankedRaidSpecies.length ? '' : '표시할 공격수가 없습니다. · ') + '수록 ' + rankedRaidSpecies.length + '개 폼 · 검색 결과 ' + filtered.length + '개';
   raidList.innerHTML = filtered.slice(0,raidLimit).map(row =>
-    `<article class="rank-item"><div class="rank-number">${row.rank}</div><div><img class="pokemon-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${row.sprite}.png" width="36" height="36" loading="lazy" decoding="async" alt="" onerror="if(this.dataset.fallback){this.hidden=true}else{this.dataset.fallback=1;this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${row.id}.png'}"><strong>${esc(row.name)}</strong><div class="small">참고 지수 ${row.score.toFixed(1)} · ${esc(row.fastName)} / ${esc(row.chargedName)}</div></div><button type="button" data-raid-name="${esc(row.name)}">등록</button></article>`
+    `<article class="rank-item"><div class="rank-number">${row.rank}</div><div><img class="pokemon-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${row.sprite}.png" width="36" height="36" loading="lazy" decoding="async" alt="" onerror="if(this.dataset.fallback){this.hidden=true}else{this.dataset.fallback=1;this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${row.id}.png'}"><strong>${esc(row.name)}</strong><div class="small">DPS ${row.dps.toFixed(2)} · TDO ${Math.round(row.tdo)}<br>${esc(row.fastName)}${row.eliteFast?'†':''} / ${esc(row.chargedName)}${row.eliteCharged?'†':''}</div></div><button type="button" data-raid-name="${esc(row.name)}">등록</button></article>`
   ).join('');
   raidMore.hidden = filtered.length <= raidLimit;
 }
@@ -218,9 +308,29 @@ async function loadRaidRanks() {
   button.hidden = true;
   raidStatus.textContent = '레이드 데이터를 불러오는 중…';
   try {
-    rankedRaidSpecies = calculateRaid500(...await getRaidData());
-    if (!rankedRaidSpecies.length) throw Error('No ranking data');
+    const [base, typings, mega, shadow] = await Promise.all([
+      getRaidData(), getPokemonTypes(),
+      getRaidResponse(raidApi+'mega_pokemon.json').then(r=>r.json()).catch(()=>null),
+      getRaidResponse(raidApi+'shadow_pokemon.json').then(r=>r.json()).catch(()=>null)
+    ]);
+    const [stats,pools,fast,charged,released,names] = base;
+    raidTypes = new Map(typings.filter(row=>Array.isArray(row.type)).map(row=>[formKey(row),row.type]));
+    const shadowRows = shadow ? stats.filter(row=>formOf(row)==='normal' && Object.hasOwn(shadow,speciesId(row)))
+      .map(row=>({...row,form:'shadow',variant:'shadow',poolKey:formKey(row)})) : [];
+    const megaRows = Array.isArray(mega) ? mega.filter(row=>row.stats && row.mega_name && Array.isArray(row.type)).map(row=>{
+      const primal = /^primal/i.test(row.mega_name);
+      const baseName = names.get(speciesId(row)) || row.pokemon_name;
+      const suffix = /^[xy]$/i.test(row.form) ? ' '+row.form.toUpperCase() : '';
+      return {...row,...row.stats,form:row.mega_name.toLowerCase(),
+        variant:primal?'primal':'mega',poolKey:speciesId(row)+':normal',
+        displayName:(primal?'원시':'메가')+baseName+suffix};
+    }) : [];
+    raidRankData = [[...stats,...shadowRows,...megaRows],pools,fast,charged,released,names];
+    $('raidSourcesStatus').textContent = [!Array.isArray(mega)?'메가·원시 데이터 조회 실패':'',!shadow?'그림자 데이터 조회 실패':''].filter(Boolean).join(' · ');
+    setRaidType();
+    if (!rankedRaidSpecies.length && !raidForm.value && !raidType.value) throw Error('No ranking data');
     raidSearch.hidden = false;
+    raidType.disabled = false;
     showRaid500();
   } catch {
     raidStatus.textContent = '데이터를 불러오지 못했어요. 연결을 확인한 후 버튼을 다시 눌러주세요.';
@@ -236,6 +346,12 @@ const getRaidResponse = async url => {
     if (!response.ok) throw Error('HTTP ' + response.status);
     return response;
   };
+let typesPromise;
+function getPokemonTypes() {
+  if (!typesPromise) typesPromise = getRaidResponse(raidApi + 'pokemon_types.json')
+    .then(response => response.json()).catch(error => {typesPromise = null;throw error;});
+  return typesPromise;
+}
 function getRaidData() {
   if (raidDataPromise) return raidDataPromise;
   raidDataPromise = (async () => {
@@ -255,8 +371,10 @@ loadRaidRanks();
 raidList.addEventListener('click', event => {
   const pick = event.target.closest('[data-raid-name]');
   if (!pick) return;
-  $('name').value = pick.dataset.raidName;
-  $('formState').value = 'normal';
+  const displayed = pick.dataset.raidName;
+  const shadow = displayed.startsWith('그림자 ');
+  $('name').value = shadow ? displayed.slice(4) : displayed;
+  $('formState').value = shadow ? 'shadow' : 'normal';
   showTab('mine');
   $('form').scrollIntoView({behavior:'smooth'});
 });
@@ -266,6 +384,7 @@ const typeNames = {
   Fighting:'격투', Poison:'독', Ground:'땅', Flying:'비행', Psychic:'에스퍼',
   Bug:'벌레', Rock:'바위', Ghost:'고스트', Dragon:'드래곤', Dark:'악', Steel:'강철', Fairy:'페어리'
 };
+raidType.innerHTML += Object.entries(typeNames).map(([type,label]) => '<option value="' + type + '">' + label + '</option>').join('');
 const counterInput = $('counterSearch');
 const counterMatches = $('counterMatches');
 const counterResult = $('counterResult');
@@ -284,7 +403,7 @@ async function loadCounter() {
   $('counterRetry').hidden = true;
   counterPending = Promise.all([
     getRaidData(),
-    getRaidResponse(raidApi + 'pokemon_types.json').then(response => response.json()),
+    getPokemonTypes(),
     getRaidResponse(raidApi + 'type_effectiveness.json').then(response => response.json())
   ]);
   try {
@@ -375,6 +494,80 @@ counterInput.addEventListener('input',updateBossMatches);
 $('counterRetry').addEventListener('click',loadCounter);
 $('tabCounter').onclick = () => {showTab('counter');loadCounter();};
 
+
+function encounterMaxCp(row, multiplier) {
+  return Math.max(10,Math.floor((row.base_attack+15)*Math.sqrt(row.base_defense+15)*
+    Math.sqrt(row.base_stamina+15)*multiplier**2/10));
+}
+let cpForms = [];
+let cpLoad;
+async function loadCpForms() {
+  if (cpLoad) return cpLoad;
+  $('cpFormResult').textContent = '포획 형태를 불러오는 중…';
+  cpLoad = getRaidData().then(([stats,,,,released,names]) => {
+    cpForms = stats.filter(row=>eligibleForm(row)&&Object.hasOwn(released,speciesId(row))).map((row,index)=>{
+      const name = names.get(speciesId(row)) || row.pokemon_name;
+      return {row,index,name:name+(formLabels[formOf(row)]?' ('+formLabels[formOf(row)]+')':'')};
+    });
+    renderCpForms();
+  }).catch(()=>{cpLoad=null;$('cpFormResult').textContent='데이터를 불러오지 못했습니다. 포획 CP 탭을 다시 눌러 주세요.';});
+  return cpLoad;
+}
+function renderCpForms(){
+  const q = clean($('cpFormSearch').value).toLowerCase().replace(/\s/g,'');
+  const select = $('cpForm');
+  select.innerHTML = cpForms.filter(({name,row})=>
+    (name+' '+row.pokemon_name).toLowerCase().replace(/\s/g,'').includes(q)
+  ).map(({index,name})=>'<option value="'+index+'">'+esc(name)+'</option>').join('');
+  select.disabled = !select.options.length;
+  renderCpEstimate();
+}
+function renderCpEstimate(){
+  const row = $('cpForm').disabled ? null : cpForms[Number($('cpForm').value)]?.row;
+  if(!row){$('cpFormResult').textContent='검색 결과가 없습니다.';return;}
+  const normal = encounterMaxCp(row,0.59740001).toLocaleString('ko-KR');
+  const boost = encounterMaxCp(row,0.667934).toLocaleString('ko-KR');
+  $('cpFormResult').textContent = $('catchCpMode').value==='맥스배틀' ?
+    '포획 최고 '+normal+' CP · 날씨 부스트 적용 없음' :
+    '포획 최고 '+normal+' CP · 날씨 부스트 '+boost+' CP';
+}
+$('cpFormSearch').addEventListener('input',renderCpForms);
+$('cpForm').addEventListener('change',renderCpEstimate);
+$('catchCpMode').addEventListener('change',()=>{if(cpForms.length)renderCpEstimate();});
+$('tabCp').addEventListener('click',loadCpForms);
+const scheduleSource='https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/';
+async function loadSchedule() {
+  const button=$('refreshSchedule');
+  if(button.disabled)return;
+  button.disabled=true;$('scheduleStatus').textContent='최신 목록을 확인하는 중…';
+  const [raids,events]=await Promise.allSettled(['raids.json','events.json'].map(name=>
+    getRaidResponse(scheduleSource+name).then(r=>r.json()).then(data=>{
+      if(!Array.isArray(data))throw Error('Invalid schedule');return data;
+    })));
+  if(raids.status==='fulfilled') {
+    $('activeRaids').innerHTML=raids.value.map(row=>{
+      const cp=row.combatPower;
+      const base = Number.isInteger(cp?.normal?.max) ? cp.normal.max.toLocaleString('ko-KR')+' CP' : '확인 불가';
+      const boosted = Number.isInteger(cp?.boosted?.max) ? cp.boosted.max.toLocaleString('ko-KR')+' CP' : '확인 불가';
+      return '<article class="pokemon"><h3>'+esc(row.name)+'</h3><span class="pill">'+esc(row.tier)+'</span><p>기본 '+base+' · 날씨 부스트 '+boosted+'</p></article>';
+    }).join('') || '<p>현재 제공된 레이드가 없습니다.</p>';
+  }
+  if(events.status==='fulfilled'){
+    const now=Date.now();
+    const fmt=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
+    const time=value=>new Date(/^\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?$/.test(value)?value+'+09:00':value);
+    $('eventList').innerHTML=events.value.filter(row=>row.end==null||time(row.end)>now)
+      .sort((a,b)=>time(a.start)-time(b.start)).slice(0,24).map(row=>{
+        const day=time(row.start);
+        return '<li>'+esc(row.name)+(Number.isFinite(day.getTime())?' · '+esc(fmt.format(day)):'')+'</li>';
+      }).join('');
+  }
+  $('scheduleStatus').textContent=raids.status==='fulfilled'&&events.status==='fulfilled'?
+    '최신 목록을 불러왔습니다. · 한국 시간 기준':'일부 일정을 불러오지 못했습니다. 아래 출처에서 확인하실 수 있습니다.';
+  button.disabled=false;
+}
+$('refreshSchedule').onclick=loadSchedule;
+$('tabSchedule').onclick=()=>{showTab('schedule');loadSchedule();};
 </script></body></html>
 
 
