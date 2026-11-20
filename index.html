@@ -6,59 +6,30 @@
 .update-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 #rankPanel [hidden]{display:none!important} #rankPanel .pokemon-sprite{width:36px;height:36px}
 #counterPanel [hidden]{display:none!important} #counterPanel .pokemon-sprite{width:36px;height:36px}
-.tabs{flex-wrap:wrap;overflow:visible}.pokemon a{color:#9bceff}#catchCpPanel select,#catchCpPanel input,#raidType{margin-bottom:12px}#updateStatus{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;font-size:13px;margin-left:8px}[hidden]{display:none!important}</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span><details><summary>포켓몬 GO 소식</summary><ul id="newsItems"></ul></details></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button><button type="button" class="secondary" id="tabCounter">카운터 검색</button><button type="button" class="secondary" id="tabMax">맥스배틀</button><button type="button" class="secondary" id="tabCp">포획 CP</button><button type="button" id="tabSchedule" class="secondary">레이드 일정</button></nav><section class="panel" id="catchCpPanel" hidden aria-labelledby="catchCpTitle">
-<h2 id="catchCpTitle">포획 최고 CP</h2>
-<p class="note">배틀 종료 후 포획 화면의 100% 개체값(15/15/15) 기준입니다. 확인된 포획 사례부터 표시합니다.</p>
-<label for="catchCpMode">배틀 종류</label>
-<select id="catchCpMode"><option value="">전체</option><option>일반 레이드</option><option>메가 레이드</option><option>맥스배틀</option></select>
-<label for="catchCpSearch">포켓몬 검색</label>
-<input id="catchCpSearch" type="search" placeholder="예: 리자몽, 자시안">
-<div class="cards" id="catchCpResults" aria-live="polite"></div><details><summary>포획 형태로 CP 계산</summary><p class="note">일반·메가 레이드는 실제로 포획하는 형태를 선택해 주세요. 맥스배틀은 포획 레벨 20 기준이며 날씨 부스트가 적용되지 않습니다. 이 계산은 배틀 출현 여부를 판정하지 않습니다.</p><label for="cpFormSearch">포획 형태 검색</label><input id="cpFormSearch" type="search" placeholder="예: 펄기아, Charizard"><label for="cpForm">포획 형태</label><select id="cpForm" disabled></select><p id="cpFormResult" role="status"></p><p class="small"><a href="https://pogoapi.net/documentation/">PoGo API · 능력치 및 CP 배율</a></p></details>
-</section>
-<script>
-(() => {
-  const encounters = [
-    { mode: '메가 레이드', boss: '메가리자몽 Y', reward: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'https://db.pokemongohub.net/pokemon/6-Mega_Y/iv-chart' },
-    { mode: '메가 레이드', boss: '메가메타그로스', reward: '메타그로스', catchCp: 2166, boostedCp: 2708, href: 'https://db.pokemongohub.net/pokemon/376-Mega/iv-chart' },
-{"mode":"일반 레이드","boss":"블랙큐레무","reward":"큐레무","catchCp":2042,"boostedCp":2553,"href":"post/guide/black-kyurem-raid-guide/"},
-{"mode":"일반 레이드","boss":"화이트큐레무","reward":"큐레무","catchCp":2042,"boostedCp":2553,"href":"https://db.pokemongohub.net/pokemon/646-White/iv-chart"},
-{"mode":"일반 레이드","boss":"레시라무","reward":null,"catchCp":2307,"boostedCp":2884,"href":"https://db.pokemongohub.net/pokemon/643/iv-chart"},
-{"mode":"맥스배틀","boss":"다이맥스 펄기아","reward":null,"catchCp":2280,"boostedCp":null,"href":"https://db.pokemongohub.net/pokemon/484-Dynamax/iv-chart"},
-{"mode":"맥스배틀","boss":"거다이맥스 두랄루돈","reward":null,"catchCp":1753,"boostedCp":null,"href":"https://db.pokemongohub.net/pokemon/884-Gigantamax/iv-chart"},
-
-    { mode: '일반 레이드', boss: '뮤츠', catchCp: 2387, boostedCp: 2984, href: 'post/guide/mewtwo-raid-boss/' },
-    { mode: '일반 레이드', boss: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'post/guide/charizard-raid-boss-guide/' },
-    { mode: '일반 레이드', boss: '검왕 자시안', reward: '역전의 용사 자시안', catchCp: 2188, boostedCp: 2735, href: 'post/guide/zacian-crowned-sword-raid-guide/' },
-    { mode: '일반 레이드', boss: '방패왕 자마젠타', reward: '역전의 용사 자마젠타', catchCp: 2188, boostedCp: 2735, href: 'post/guide/zamazenta-crowned-shield-raid-guide/' },
-    { mode: '메가 레이드', boss: '메가리자몽 X', reward: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'https://db.pokemongohub.net/pokemon/6-Mega_X/iv-chart' },
-    { mode: '맥스배틀', boss: '거다이맥스 리자몽', catchCp: 1651, boostedCp: null, href: 'post/article/gigantamax-charizard-max-battle-guide/' }
-  ];
-  const mode = document.getElementById('catchCpMode');
-  const search = document.getElementById('catchCpSearch');
-  const results = document.getElementById('catchCpResults');
-
-  function renderCatchCp() {
-    const query = search.value.toLowerCase().replace(/\s+/g, '');
-    const filtered = encounters.filter(({ mode: battleMode, boss, reward }) =>
-      (!mode.value || mode.value === battleMode) &&
-      (boss + (reward ?? '')).toLowerCase().replace(/\s+/g, '').includes(query)
-    );
-
-    results.innerHTML = filtered.map(({ mode: battleMode, boss, reward, catchCp, boostedCp, href }) => {
-      const boosted = boostedCp === null ? '적용 없음' : boostedCp.toLocaleString('ko-KR') + ' CP';
-      const source = new URL(href, 'https://pokemongohub.net/').href;
-      return '<article class="pokemon"><h3>' + boss + '</h3><span class="pill">' + battleMode +
-        '</span>' + (reward ? '<p>포획 형태 ' + reward + '</p>' : '') +
-        '<p>기본 <strong>' + catchCp.toLocaleString('ko-KR') + ' CP</strong> · 날씨 부스트 <strong>' + boosted +
-        '</strong></p><a href="' + source + '" target="_blank" rel="noopener noreferrer">CP 출처</a></article>';
-    }).join('') || '<p class="empty">확인된 포획 CP가 없습니다.</p>';
-  }
-
-  mode.addEventListener('change', renderCatchCp);
-  search.addEventListener('input', renderCatchCp);
-  renderCatchCp();
-})();
-</script><section class="panel" id="schedulePanel" hidden><h2>현재 레이드와 이벤트</h2><button id="refreshSchedule" type="button">일정 다시 확인</button><p id="scheduleStatus" role="status"></p><div id="activeRaids" class="cards"></div><h3>예정 이벤트</h3><ul id="eventList"></ul><p><a href="https://leekduck.com/events/">Leek Duck 이벤트 전체 보기</a> · <a href="https://pokemongo.com/news/?hl=ko">Pokémon GO 공식 소식</a></p></section><section class="panel" id="maxPanel" hidden><h2>맥스배틀 공격수</h2><div class="actions"><a href="https://db.pokemongohub.net/best/dynamax-attackers-per-type">18타입 공격수 순위</a><a href="https://db.pokemongohub.net/best/dynamax-tanks-per-type">보스 공격 타입별 탱커 순위</a></div><p class="note">지원은 다이월로 피해를 줄이거나 다이리커버리로 아군을 회복하는 역할입니다. 탱커로 게이지를 모으고 다이맥스 턴에 공격수로 교대할 수 있습니다. 보스별 치유·방어·공격 추천은 <a href="https://db.pokemongohub.net/">포켓몬별 Max Battle 카운터</a>에서 확인하실 수 있습니다.</p><div class="cards"><article class="pokemon"><h3>거다이맥스 리자몽</h3><p>불꽃 공격</p><a href="https://db.pokemongohub.net/pokemon/6-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>다이맥스 펄기아</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/484-Dynamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>거다이맥스 두랄루돈</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/884-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article></div></section><section class="panel" id="rankPanel">
+.tabs{flex-wrap:wrap;overflow:visible}.pokemon a{color:#9bceff}#catchCpPanel select,#catchCpPanel input,#raidType{margin-bottom:12px}#updateStatus{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;font-size:13px;margin-left:8px}[hidden]{display:none!important}#battleSearch{width:100%;margin-bottom:6px}.battle-stars{color:#ffce73;font-weight:700;white-space:nowrap}.battle-status{color:#97dec4}.battle-original{margin-top:7px}#battlePanel a{color:#9bceff}#battlePanel section{margin-top:22px}</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span><details><summary>포켓몬 GO 소식</summary><ul id="newsItems"></ul></details></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">전체 순위표</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button><button type="button" class="secondary" id="tabBattle">배틀·일정·포획 CP</button></nav>
+<section class="panel" id="battlePanel" hidden aria-labelledby="battleTitle">
+  <h2 id="battleTitle">배틀·일정·포획 CP</h2>
+  <label for="battleSearch">포켓몬·보스·이벤트 검색</label>
+  <input id="battleSearch" type="search" placeholder="예: 펄기아, 메가리자몽, 맥스 먼데이" autocomplete="off">
+  <p id="battleStatus" class="small" role="status"></p>
+  <p class="note">난이도 별은 레이드 등급입니다. 포획 추천 별은 레이드·맥스 활용도를 기준으로 검토한 종에 표시합니다. ★★★★★ 우선 확보 · ★★★ 목적에 따라 확보 · ★ 도감용. 미평가는 기준이 확인되면 추가합니다.</p>
+  <section id="battleTimeline"><h3>진행 중인 일정과 배틀</h3><div id="battleCurrent" class="cards"></div>
+  <h3>예정 일정</h3><div id="battleUpcoming" class="cards"></div></section>
+  <section id="battleCapture"><h3>포획 최고 CP · 100% 개체</h3>
+    <p class="note">메가 레이드는 실제 포획 형태 기준입니다. 맥스배틀 포획에는 날씨 부스트가 적용되지 않습니다.</p>
+    <div id="battleCp" class="cards"></div><div id="battleFormula" class="cards"></div>
+  </section>
+  <section id="counterPanel" hidden>
+  <h2>카운터 검색창</h2>
+  
+  <p id="counterStatus" role="status"></p>
+  <button id="counterRetry" type="button" hidden>다시 불러오기</button>
+  <div id="counterMatches" class="actions"></div>
+  <div id="counterResult"></div>
+  <p class="note">현재 출현 목록과 별개로 보스를 검색할 수 있어요. 카운터 상위 20개는 기술 상성, 자속, 공격 주기와 내구도를 반영한 참고 순위예요. 타입 필터는 차지 기술 기준입니다. 메가·그림자 공격자, 보스 기술, 날씨, 파티 파워는 계산에서 제외합니다. 일부 기술은 대단한 기술머신이 필요할 수 있어요.</p>
+</section><section id="battleMaxGuide"><h3>맥스배틀 추천</h3><div class="actions"><a href="https://db.pokemongohub.net/best/dynamax-attackers-per-type">18타입 공격수</a><a href="https://db.pokemongohub.net/best/dynamax-tanks-per-type">타입별 탱커</a></div><p class="note">다이월은 피해를 줄이고 다이리커버리는 아군을 회복합니다. 보스별 역할과 기술은 각 포켓몬의 출처에서 확인하실 수 있습니다.</p><div class="cards"><article class="pokemon"><h3>거다이맥스 리자몽</h3><p>불꽃 공격</p><a href="https://db.pokemongohub.net/pokemon/6-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>다이맥스 펄기아</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/484-Dynamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>거다이맥스 두랄루돈</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/884-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article></div></section>
+  <p class="small"><a href="https://leekduck.com/events/">Leek Duck 일정</a> · <a href="https://pokemongo.com/news/?hl=ko">Pokémon GO 공식 소식</a></p>
+</section><section class="panel" id="rankPanel">
     <h2>레이드 공격수 순위</h2><label for="raidType">공격 타입</label><select id="raidType" disabled><option value="">전체 타입</option></select><label for="raidForm">공격수 형태</label><select id="raidForm"><option value="">전체 형태</option><option value="normal">일반</option><option value="shadow">그림자</option><option value="mega">메가</option><option value="primal">원시</option></select><label for="raidMetric">정렬 지표</label><select id="raidMetric"><option value="dps">DPS · 초당 피해량</option><option value="tdo">TDO · 기절 전 총 피해량</option></select>
     <p class="note">40레벨·15/15/15 기준입니다. 공격은 기준 상대의 방어력 180, 방어는 기준 상대의 공격력 180과 초당 위력 40을 가정합니다. 자속과 그림자 공격·방어 보정, 기술 위력·시간·에너지를 반영합니다. TDO는 DPS × 예상 생존 시간입니다. 실제 레이드에서는 보스 기술·날씨·파티 구성과 회피에 따라 달라집니다. †는 데이터에 등록된 대단한 기술머신 기술입니다. 일반 폼의 출시는 종 단위로 확인되며, 메가 및 원시 폼은 공급처의 데이터 기준입니다.</p>
     <input id="raid500Search" type="search" placeholder="이름으로 검색" aria-label="500위 목록 검색" hidden>
@@ -66,16 +37,7 @@
     <div id="raid500List" class="rank-list"></div>
     <button id="raid500More" type="button" class="secondary" hidden>50개 더 보기</button>
     <p class="small">데이터 · PoGo API / 이름과 이미지 · PokéAPI</p>
-  <p class="small"><a href="https://db.pokemongohub.net/best/overall-attackers" target="_blank" rel="noopener noreferrer">실전 시뮬레이션 순위 · Pokémon GO Hub</a></p><button id="loadRaid500" type="button" hidden>순위 다시 불러오기</button></section><section class="panel hidden" id="counterPanel">
-  <h2>카운터 검색창</h2>
-  <label for="counterSearch">보스 이름 또는 폼</label>
-  <input id="counterSearch" type="search" placeholder="예: 레쿠쟈, 랜드로스 영물폼" disabled>
-  <p id="counterStatus" role="status"></p>
-  <button id="counterRetry" type="button" hidden>다시 불러오기</button>
-  <div id="counterMatches" class="actions"></div>
-  <div id="counterResult"></div>
-  <p class="note">현재 출현 목록과 별개로 보스를 검색할 수 있어요. 카운터 상위 20개는 기술 상성, 자속, 공격 주기와 내구도를 반영한 참고 순위예요. 타입 필터는 차지 기술 기준입니다. 메가·그림자 공격자, 보스 기술, 날씨, 파티 파워는 계산에서 제외합니다. 일부 기술은 대단한 기술머신이 필요할 수 있어요.</p>
-</section>
+  <p class="small"><a href="https://db.pokemongohub.net/best/overall-attackers" target="_blank" rel="noopener noreferrer">실전 시뮬레이션 순위 · Pokémon GO Hub</a></p><button id="loadRaid500" type="button" hidden>순위 다시 불러오기</button></section>
 <div id="minePanel"><section class="panel"><h2 id="formTitle">포켓몬 등록</h2><form id="form"><div class="fields"><label>포켓몬 이름<input id="name" list="names" placeholder="예: 레어코일" required autocomplete="off"><datalist id="names"></datalist></label><label>공격 IV (0~15)<input id="atk" type="number" min="0" max="15" value="15" required></label><label>방어 IV (0~15)<input id="def" type="number" min="0" max="15" value="15" required></label><label>HP IV (0~15)<input id="hp" type="number" min="0" max="15" value="15" required></label><label>상태<select id="formState"><option value="normal">일반</option><option value="shadow">그림자</option><option value="purified">정화</option></select></label><label>현재 CP<input id="cp" type="number" min="10" max="10000" placeholder="선택 입력"></label><label>노말 기술<input id="fast" placeholder="예: 전기쇼크"></label><label>스페셜 기술<input id="charged" placeholder="예: 와일드볼트"></label></div><div class="actions"><button type="submit" id="save">도감에 추가</button><button type="button" class="secondary hidden" id="cancel">수정 취소</button></div></form><p class="small">이름은 추천 목록에서 선택하실 수 있습니다. 목록에 없는 포켓몬도 등록할 수 있습니다. 육성할 개체는 등록 후 우선으로 지정하세요.</p></section><section class="panel"><h2>내 포켓몬</h2><div class="toolbar"><input id="search" placeholder="이름·기술 검색" aria-label="검색"><select id="typeFilter" aria-label="타입 필터"><option value="">전체 타입</option></select><select id="stateFilter" aria-label="상태 필터"><option value="">전체 상태</option><option value="shadow">그림자</option><option value="normal">일반</option><option value="purified">정화</option></select><select id="sort" aria-label="정렬"><option value="priority">내 육성 우선순</option><option value="iv">IV 높은순</option><option value="name">이름순</option><option value="new">최근 등록순</option></select></div><div class="cards" id="cards"></div><div class="actions"><button class="secondary" id="export">JSON 백업</button><button class="secondary" id="importBtn">JSON 복원</button><input id="import" type="file" accept="application/json" class="hidden"><button class="secondary" id="demo">예시 3개 넣기</button></div></section><section class="panel"><h2>선택 포켓몬 비교 (최대 3마리)</h2><div id="comparison" class="compare"><p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p></div></section><section class="panel"><h2>내 육성 우선순위</h2><p class="note">직접 우선으로 지정한 개체를 먼저 표시합니다. 같은 우선순위에서는 IV 합계가 높은 순서로 표시합니다. 도감은 현재 브라우저에 저장되며 JSON으로 백업할 수 있습니다.</p></section></div></main><script>
 'use strict';
 // Local names and evolution hints.
@@ -138,11 +100,9 @@ function pokemonSprite(name) {
 const clean=s=>String(s??'').trim();const esc=s=>clean(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const lookup=n=>catalog.find(x=>x.name.toLowerCase()===clean(n).toLowerCase());const iv=x=>Number(x.atk)+Number(x.def)+Number(x.hp);function persist(){localStorage.setItem(key,JSON.stringify(entries))};function render(){let q=clean($('search').value).toLowerCase(),type=$('typeFilter').value,state=$('stateFilter').value;let list=entries.filter(x=>(x.name+' '+x.fast+' '+x.charged).toLowerCase().includes(q)&&(!type||lookup(x.name)?.type===type)&&(!state||x.state===state));let sort=$('sort').value;list.sort((a,b)=>sort==='iv'?iv(b)-iv(a):sort==='name'?a.name.localeCompare(b.name,'ko'):sort==='new'?b.created-a.created:Number(b.priority===true)-Number(a.priority===true)||iv(b)-iv(a));$('count').textContent=entries.length;$('priority').textContent=entries.filter(x=>x.priority===true).length;$('selected').textContent=compare.size+'/3';$('cards').innerHTML=list.length?list.map(x=>{let p=lookup(x.name);return `<article class="pokemon"><div class="top"><div><h3>${pokemonSprite(p?.name)}${esc(x.name)}</h3><span class="pill">${esc(p?.type||'타입 미등록')}</span><span class="pill">${x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'}</span>${x.priority===true?'<span class="pill">우선 육성</span>':''}</div></div><p class="note">IV ${x.atk}/${x.def}/${x.hp} (${Math.round(iv(x)/45*100)}%)${x.cp?' · CP '+esc(x.cp):''}<br>기술: ${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}</p>${p?.evolve?'<p class="note">진화 후보 · '+esc(p.evolve)+'</p>':''}<div class="actions"><label class="check"><input type="checkbox" data-action="compare" data-id="${esc(x.id)}" ${compare.has(x.id)?'checked':''} ${!compare.has(x.id)&&compare.size>=3?'disabled':''}> 비교</label><button type="button" class="secondary" data-action="priority" aria-pressed="${x.priority===true}" data-id="${esc(x.id)}">${x.priority===true?'우선 지정 해제':'우선 육성 지정'}</button><button class="secondary" data-action="edit" data-id="${esc(x.id)}">수정</button><button class="danger" data-action="delete" data-id="${esc(x.id)}">삭제</button></div></article>`}).join(''):'<p class="empty">조건에 맞는 포켓몬이 없습니다.</p>';let chosen=entries.filter(x=>compare.has(x.id));$('comparison').innerHTML=chosen.length?`<table><thead><tr><th>항목</th>${chosen.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>${[['상태',x=>x.state==='shadow'?'그림자':x.state==='purified'?'정화':'일반'],['IV',x=>`${x.atk}/${x.def}/${x.hp}`],['IV 합계',x=>`${iv(x)}/45`],['기술',x=>`${esc(x.fast||'미입력')} / ${esc(x.charged||'미입력')}`],['내 육성 우선순위',x=>x.priority===true?'우선':'미지정']].map(([title,fn])=>`<tr><th>${title}</th>${chosen.map(x=>`<td>${fn(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="empty">도감에서 비교할 포켓몬을 선택하세요.</p>'};
 $('form').onsubmit=e=>{e.preventDefault();let name=clean($('name').value);let nums=['atk','def','hp'].map(k=>Number($(k).value));if(!name||nums.some(v=>!Number.isInteger(v)||v<0||v>15)){alert('이름과 IV(0~15)를 확인하세요.');return}let data={name,atk:nums[0],def:nums[1],hp:nums[2],state:$('formState').value,cp:clean($('cp').value),fast:clean($('fast').value),charged:clean($('charged').value)};if(editing){let i=entries.findIndex(x=>x.id===editing);if(i>=0)entries[i]={...entries[i],...data}}else entries.push({...data,id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),created:Date.now()});persist();reset();render()};function reset(){editing=null;$('form').reset();['atk','def','hp'].forEach(id=>$(id).value=15);$('save').textContent='도감에 추가';$('formTitle').textContent='포켓몬 등록';$('cancel').classList.add('hidden')};$('cancel').onclick=reset;$('cards').addEventListener('click',e=>{let b=e.target.closest('[data-action]');if(!b)return;let id=b.dataset.id,x=entries.find(z=>z.id===id);if(!x)return;if(b.dataset.action==='priority'){x.priority=x.priority!==true;persist();render()}else if(b.dataset.action==='delete'){if(confirm(x.name+'을(를) 삭제할까요?')){entries=entries.filter(z=>z.id!==id);compare.delete(id);persist();render()}}else if(b.dataset.action==='edit'){editing=id;['name','atk','def','hp','cp','fast','charged'].forEach(k=>$(k).value=x[k]??'');$('formState').value=x.state;$('save').textContent='수정 저장';$('formTitle').textContent='포켓몬 수정';$('cancel').classList.remove('hidden');$('form').scrollIntoView({behavior:'smooth'})}});$('cards').addEventListener('change',e=>{if(e.target.dataset.action!=='compare')return;let id=e.target.dataset.id;if(e.target.checked){if(compare.size<3)compare.add(id)}else compare.delete(id);render()});['search','typeFilter','stateFilter','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));$('export').onclick=()=>{let blob=new Blob([JSON.stringify({version:1,entries},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pokemon-raid-dex-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};$('importBtn').onclick=()=>$('import').click();$('import').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data.entries))throw Error('형식 오류');let valid=data.entries.slice(0,1000).filter(x=>x&&typeof x.name==='string'&&['normal','shadow','purified'].includes(x.state)&&['atk','def','hp'].every(k=>Number.isInteger(Number(x[k]))&&Number(x[k])>=0&&Number(x[k])<=15)).map((x,i)=>({...x,id:String(x.id||'import'+i),created:Number(x.created)||Date.now()}));if(!confirm(`유효한 ${valid.length}개 항목으로 현재 도감을 교체할까요?`))return;entries=valid;compare.clear();persist();render()}catch{alert('올바른 백업 파일이 아닙니다.')}e.target.value=''};$('demo').onclick=()=>{if(entries.length&&!confirm('기존 목록에 예시 3개를 추가할까요?'))return;[['레어코일',15,15,14,'normal'],['망나뇽',15,13,15,'normal'],['거대코뿌리',14,15,15,'shadow']].forEach(([name,atk,def,hp,state],i)=>entries.push({id:'demo'+Date.now()+i,created:Date.now()+i,name,atk,def,hp,state,cp:'',fast:'',charged:''}));persist();render()};$('names').innerHTML=catalog.map(x=>`<option value="${esc(x.name)}">`).join('');$('typeFilter').innerHTML+=[...new Set(catalog.map(x=>x.type))].sort((a,b)=>a.localeCompare(b,'ko')).map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');render();
 
-function showTab(which){$('schedulePanel').hidden=which!=='schedule';$('tabSchedule').classList.toggle('secondary',which!=='schedule');$('catchCpPanel').hidden=which!=='cp';$('maxPanel').hidden=which!=='max';$('tabCp').classList.toggle('secondary',which!=='cp');$('tabMax').classList.toggle('secondary',which!=='max');$('counterPanel').classList.toggle('hidden',which!=='counter');$('tabCounter').classList.toggle('secondary',which!=='counter');$('rankPanel').classList.toggle('hidden',which!=='ranks');$('minePanel').classList.toggle('hidden',which!=='mine');$('tabRanks').classList.toggle('secondary',which!=='ranks');$('tabMine').classList.toggle('secondary',which!=='mine')}
+function showTab(which){$('battlePanel').hidden=which!=='battle';$('tabBattle').classList.toggle('secondary',which!=='battle');$('rankPanel').classList.toggle('hidden',which!=='ranks');$('minePanel').classList.toggle('hidden',which!=='mine');$('tabRanks').classList.toggle('secondary',which!=='ranks');$('tabMine').classList.toggle('secondary',which!=='mine')}
 $('tabRanks').onclick=()=>showTab('ranks');
 $('tabMine').onclick=()=>showTab('mine');
-$('tabCp').onclick=()=>showTab('cp');
-$('tabMax').onclick=()=>showTab('max');
 showTab('ranks');
 </script><script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script><script>
 async function loadDailyUpdates() {
@@ -385,7 +345,7 @@ const typeNames = {
   Bug:'벌레', Rock:'바위', Ghost:'고스트', Dragon:'드래곤', Dark:'악', Steel:'강철', Fairy:'페어리'
 };
 raidType.innerHTML += Object.entries(typeNames).map(([type,label]) => '<option value="' + type + '">' + label + '</option>').join('');
-const counterInput = $('counterSearch');
+const counterInput = $('battleSearch');
 const counterMatches = $('counterMatches');
 const counterResult = $('counterResult');
 const counterStatus = $('counterStatus');
@@ -424,7 +384,7 @@ async function loadCounter() {
       bosses.set(key,{key,id,english,name:(names.get(id) || english) + label,types:row.type});
     }
     counterData = {data,chart,typesByForm,bosses:[...bosses.values()]};
-    counterInput.disabled = false;
+
     updateBossMatches();
   } catch {
     counterStatus.textContent = '상성 데이터를 불러오지 못했어요.';
@@ -490,89 +450,174 @@ function showCounterBoss() {
   filter.addEventListener('change',renderCounters);
   renderCounters();
 }
-counterInput.addEventListener('input',updateBossMatches);
+counterInput.addEventListener('input',()=>{if(counterData)updateBossMatches();});
 $('counterRetry').addEventListener('click',loadCounter);
-$('tabCounter').onclick = () => {showTab('counter');loadCounter();};
+
 
 
 function encounterMaxCp(row, multiplier) {
   return Math.max(10,Math.floor((row.base_attack+15)*Math.sqrt(row.base_defense+15)*
     Math.sqrt(row.base_stamina+15)*multiplier**2/10));
 }
-let cpForms = [];
-let cpLoad;
-async function loadCpForms() {
-  if (cpLoad) return cpLoad;
-  $('cpFormResult').textContent = '포획 형태를 불러오는 중…';
-  cpLoad = getRaidData().then(([stats,,,,released,names]) => {
-    cpForms = stats.filter(row=>eligibleForm(row)&&Object.hasOwn(released,speciesId(row))).map((row,index)=>{
-      const name = names.get(speciesId(row)) || row.pokemon_name;
-      return {row,index,name:name+(formLabels[formOf(row)]?' ('+formLabels[formOf(row)]+')':'')};
+const encounters = [
+    { mode: '메가 레이드', boss: '메가리자몽 Y', reward: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'https://db.pokemongohub.net/pokemon/6-Mega_Y/iv-chart' },
+    { mode: '메가 레이드', boss: '메가메타그로스', reward: '메타그로스', catchCp: 2166, boostedCp: 2708, href: 'https://db.pokemongohub.net/pokemon/376-Mega/iv-chart' },
+{"mode":"일반 레이드","boss":"블랙큐레무","reward":"큐레무","catchCp":2042,"boostedCp":2553,"href":"post/guide/black-kyurem-raid-guide/"},
+{"mode":"일반 레이드","boss":"화이트큐레무","reward":"큐레무","catchCp":2042,"boostedCp":2553,"href":"https://db.pokemongohub.net/pokemon/646-White/iv-chart"},
+{"mode":"일반 레이드","boss":"레시라무","reward":null,"catchCp":2307,"boostedCp":2884,"href":"https://db.pokemongohub.net/pokemon/643/iv-chart"},
+{"mode":"맥스배틀","boss":"다이맥스 펄기아","reward":null,"catchCp":2280,"boostedCp":null,"href":"https://db.pokemongohub.net/pokemon/484-Dynamax/iv-chart"},
+{"mode":"맥스배틀","boss":"거다이맥스 두랄루돈","reward":null,"catchCp":1753,"boostedCp":null,"href":"https://db.pokemongohub.net/pokemon/884-Gigantamax/iv-chart"},
+
+    { mode: '일반 레이드', boss: '뮤츠', catchCp: 2387, boostedCp: 2984, href: 'post/guide/mewtwo-raid-boss/' },
+    { mode: '일반 레이드', boss: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'post/guide/charizard-raid-boss-guide/' },
+    { mode: '일반 레이드', boss: '검왕 자시안', reward: '역전의 용사 자시안', catchCp: 2188, boostedCp: 2735, href: 'post/guide/zacian-crowned-sword-raid-guide/' },
+    { mode: '일반 레이드', boss: '방패왕 자마젠타', reward: '역전의 용사 자마젠타', catchCp: 2188, boostedCp: 2735, href: 'post/guide/zamazenta-crowned-shield-raid-guide/' },
+    { mode: '메가 레이드', boss: '메가리자몽 X', reward: '리자몽', catchCp: 1651, boostedCp: 2064, href: 'https://db.pokemongohub.net/pokemon/6-Mega_X/iv-chart' },
+    { mode: '맥스배틀', boss: '거다이맥스 리자몽', catchCp: 1651, boostedCp: null, href: 'post/article/gigantamax-charizard-max-battle-guide/' }
+  ];
+
+const battleSource='https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/';
+const battleSearch=$('battleSearch');
+const kstFormat=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'medium',timeStyle:'short'});
+const koreanTypes={normal:'노말',fire:'불꽃',water:'물',electric:'전기',grass:'풀',ice:'얼음',fighting:'격투',poison:'독',ground:'땅',flying:'비행',psychic:'에스퍼',bug:'벌레',rock:'바위',ghost:'고스트',dragon:'드래곤',dark:'악',steel:'강철',fairy:'페어리'};
+const koreanWeather={sunnyclear:'맑음',rainy:'비',partlycloudy:'약간 구름',cloudy:'구름',windy:'강풍',snow:'눈',fog:'안개'};
+const battleTerms=[
+  [/Max Battle Day/gi,'맥스배틀 데이'],[/Max Monday/gi,'맥스 먼데이'],[/Raid Hour/gi,'레이드 아워'],
+  [/Raid Day/gi,'레이드 데이'],[/Raid Weekend/gi,'레이드 위켄드'],[/Community Day/gi,'커뮤니티 데이'],
+  [/Spotlight Hour/gi,'스포트라이트 아워'],[/Wild Area/gi,'와일드 에리어'],[/GO Tour/gi,'GO 투어'],
+  [/GO Fest/gi,'GO 페스트'],[/Research Day/gi,'리서치 데이'],[/Hatch Day/gi,'부화 데이'],
+  [/Mega Evolution/gi,'메가진화'],[/Gigantamax/gi,'거다이맥스'],[/Dynamax/gi,'다이맥스'],
+  [/Shadow/gi,'그림자'],[/Alolan/gi,'알로라'],[/Galarian/gi,'가라르'],[/Hisuian/gi,'히스이'],
+  [/Paldean/gi,'팔데아'],[/Primal/gi,'원시'],[/Mega\b/gi,'메가'],[/Origin Forme/gi,'오리진폼'],
+  [/Altered Forme/gi,'어나더폼'],[/Black Kyurem/gi,'블랙큐레무'],[/White Kyurem/gi,'화이트큐레무'],
+  [/Crowned Sword Zacian/gi,'검왕 자시안'],[/Crowned Shield Zamazenta/gi,'방패왕 자마젠타'],
+  [/Into the Wild/gi,'와일드 위크'],[/Mighty Footsteps/gi,'커다란 발자국']
+];
+const eventTypes={
+  'raid-hour':'레이드 아워','raid-day':'레이드 데이','raid-weekend':'레이드 위켄드',
+  'raid-battles':'레이드배틀','mega-raids':'메가 레이드','max-mondays':'맥스 먼데이',
+  'max-battles':'맥스배틀','max-battle':'맥스배틀','max-battle-day':'맥스배틀 데이',
+  'community-day':'커뮤니티 데이','spotlight-hour':'스포트라이트 아워','season':'시즌',
+  'event':'이벤트','research':'리서치','go-battle-league':'GO배틀리그'
+};
+const shortlist=[
+  [5,['무한다이노','큐레무','자시안','자마젠타','뮤츠','레쿠쟈','그란돈','가이오가','메타그로스','네크로즈마','거다이맥스 리자몽','다이맥스 펄기아','거다이맥스 두랄루돈','다이맥스 해피너스']],
+  [3,['샹델라','리자몽','다크라이','망나뇽','펄기아','디아루가','기라티나','레시라무','제크로무','보스로라','마기라스','가디안','팬텀','깜까미']],
+  [1,['나옹','찌르꼬','구구','꼬렛','잉어킹','꼬리선']]
+];
+let battleData={raids:[],events:[],forms:[],names:[],pending:null,checked:0,failed:[]};
+const normBattle=s=>clean(s).toLowerCase().replace(/[\s\p{P}]/gu,'');
+function koreanBattleName(value){
+  let out=clean(value);
+  for(const [pattern, replacement] of battleTerms)out=out.replace(pattern,replacement);
+  for(const [pattern, replacement] of battleData.names)out=out.replace(pattern,replacement);
+  return out;
+}
+function capturePriority(name){
+  const normalized=normBattle(name);
+  return shortlist.find(([,names])=>names.some(item=>normalized.includes(normBattle(item))))?.[0];
+}
+function stars(n){return '<span class="battle-stars" aria-label="별 '+n+'개">'+ '★'.repeat(n)+'</span>';}
+function priorityMarkup(name){
+  const n=capturePriority(name);
+  return '포획 추천 '+(n?stars(n):'미평가');
+}
+function parseBattleTime(value){
+  if(typeof value!=='string'||!value)return NaN;
+  return Date.parse(/^\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?$/.test(value)?value+'+09:00':value);
+}
+function raidTier(value){
+  const key=clean(value).toLowerCase();
+  const tier=key.match(/(?:tier\s*)?(\d+)\s*(?:-?star|$)/i);
+  const number=tier?Number(tier[1]):null;
+  const kind=key.includes('primal')?'원시 레이드':key.includes('mega')?'메가 레이드':key.includes('shadow')?'그림자 레이드':key.includes('max')?'맥스배틀':'레이드배틀';
+  return {kind,number:number&&number<=6?number:null};
+}
+function eventKind(row){
+  const raw=clean(row.eventType);
+  return eventTypes[raw] || (/max/i.test(raw)?'맥스배틀':/raid/i.test(raw)?'레이드 일정':'이벤트');
+}
+function metadataOriginal(original, translated){
+  return !/[a-z]{2}/i.test(translated)?'':'<details class="battle-original"><summary>영문 원제</summary><small>'+esc(original)+'</small></details>';
+}
+function eventCard(row,current){
+  const from=parseBattleTime(row.start),to=parseBattleTime(row.end);
+  const translated=koreanBattleName(row.name);
+  const title=/[A-Za-z]{2,}/.test(translated)?translated.replace(/[A-Za-z][A-Za-z'’-]*(?:\s+[A-Za-z][A-Za-z'’-]*)*/g,'').replace(/^[\s:·–-]+|[\s:·–-]+$/g,'').trim()||eventKind(row):translated;
+  const when=[from,to].filter(Number.isFinite).map(value=>kstFormat.format(value)).join(' ~ ');
+  const priority=capturePriority(translated);
+  return '<article class="pokemon"><h3>'+esc(title)+'</h3><span class="pill '+(current?'battle-status':'')+'">'+(current?'진행 중':'예정')+'</span><span class="pill">'+esc(eventKind(row))+'</span><p>'+esc(when||'시간 미정')+'</p><p>포획 추천 '+(priority?stars(priority):'미평가')+'</p>'+metadataOriginal(row.name,translated)+'</article>';
+}
+function raidCard(row){
+  const name=koreanBattleName(row.name), tier=raidTier(row.tier);
+  const cp=row.combatPower, fmt=value=>Number.isInteger(value)&&value>0?value.toLocaleString('ko-KR')+' CP':'확인 불가';
+  const types=(row.types||[]).map(type=>koreanTypes[type.name]).filter(Boolean).join(' · ');
+  const weather=(row.boostedWeather||[]).map(entry=>koreanWeather[entry.name]).filter(Boolean).join(' · ');
+  return '<article class="pokemon"><h3>'+esc(name)+'</h3><span class="pill">'+esc(tier.kind)+'</span>'+
+    '<p>난이도 '+(tier.number?stars(tier.number):'등급 미제공')+' · '+priorityMarkup(name)+'</p>'+
+    '<p>기본 <strong>'+fmt(cp?.normal?.max)+'</strong> · 날씨 부스트 <strong>'+fmt(cp?.boosted?.max)+'</strong></p>'+
+    (types||weather?'<p class="small">'+esc([types,weather&&'부스트 날씨 '+weather].filter(Boolean).join(' · '))+'</p>':'')+metadataOriginal(row.name,name)+'</article>';
+}
+function renderBattle(){
+  const q=normBattle(battleSearch.value), now=Date.now();
+  const match=(...words)=>!q||words.some(word=>normBattle(word).includes(q));
+  const events=battleData.events.filter(row=>match(row.name,koreanBattleName(row.name),eventKind(row)));
+  const chronological=(a,b)=>parseBattleTime(a.start)-parseBattleTime(b.start);
+  const current=events.filter(row=>parseBattleTime(row.start)<=now&&parseBattleTime(row.end)>now).sort(chronological);
+  const upcoming=events.filter(row=>parseBattleTime(row.start)>now).sort(chronological);
+  const raids=battleData.raids.filter(row=>match(row.name,koreanBattleName(row.name),raidTier(row.tier).kind));
+  $('battleCurrent').innerHTML=current.map(row=>eventCard(row,true)).concat(raids.map(raidCard)).join('')||'<p class="empty">표시할 진행 중인 일정이나 배틀이 없습니다.</p>';
+  $('battleUpcoming').innerHTML=upcoming.slice(0,q?60:24).map(row=>eventCard(row,false)).join('')||'<p class="empty">표시할 예정 일정이 없습니다.</p>';
+  const cpRows=encounters.filter(row=>match(row.boss,row.reward,row.mode));
+  $('battleCp').innerHTML=cpRows.map(row=>{
+    const ref=new URL(row.href,'https://pokemongohub.net/').href;
+    return '<article class="pokemon"><h3>'+esc(row.boss)+'</h3><span class="pill">'+esc(row.mode)+'</span>'+
+      (row.reward?'<p>포획 형태 '+esc(row.reward)+'</p>':'')+'<p>기본 <strong>'+row.catchCp.toLocaleString('ko-KR')+
+      ' CP</strong> · 날씨 부스트 <strong>'+(row.boostedCp===null?'적용 없음':row.boostedCp.toLocaleString('ko-KR')+' CP')+
+      '</strong></p><p>'+priorityMarkup(row.boss)+'</p><a href="'+ref+'" target="_blank" rel="noopener noreferrer">CP 출처</a></article>';
+  }).join('');
+  const speciesQuery=q.replace(/^(거다이맥스|다이맥스|메가|원시|그림자|gigantamax|dynamax|mega|primal|shadow)/,'').replace(/(?<=리자몽|charizard)[xy]$/,'');
+  const forms=speciesQuery?battleData.forms.filter(form=>[form.name,form.english].some(name=>normBattle(name).includes(speciesQuery))).slice(0,8):[];
+  $('counterPanel').hidden=!q;
+  $('battleFormula').innerHTML=forms.map(({name,row})=>{
+    const regular=encounterMaxCp(row,0.59740001).toLocaleString('ko-KR');
+    const boosted=encounterMaxCp(row,0.667934).toLocaleString('ko-KR');
+    return '<article class="pokemon"><h3>'+esc(name)+'</h3><span class="pill">포획 형태 계산</span><p>레이드 '+regular+' CP · 날씨 부스트 '+boosted+' CP</p><p>맥스배틀 '+regular+' CP · 날씨 부스트 적용 없음</p><p class="small">해당 형태를 포획할 수 있는 배틀 기준</p></article>';
+  }).join('');
+  const guides=[...$('battleMaxGuide').querySelectorAll('article')];
+  for(const guide of guides)guide.hidden=!match(guide.textContent,'맥스배틀','맥스배틀 추천');
+  $('battleMaxGuide').hidden=!!q&&guides.every(guide=>guide.hidden);
+  $('battleCapture').hidden=!!q&&!cpRows.length&&!forms.length;
+}
+async function loadBattle(){
+  if(battleData.pending||Date.now()-battleData.checked<5*60*1000)return;
+  $('battleStatus').textContent='최신 일정과 한글 도감을 불러오는 중…';
+  const read=name=>getRaidResponse(battleSource+name).then(r=>r.json()).then(rows=>{
+    if(!Array.isArray(rows))throw Error('Invalid schedule');return rows;
+  });
+  battleData.pending=Promise.allSettled([read('raids.json'),read('events.json'),getRaidData()]);
+  const [raids,events,dex]=await battleData.pending;
+  battleData.pending=null;
+  battleData.checked=[raids,events,dex].every(result=>result.status==='fulfilled')?Date.now():0;
+  if(raids.status==='fulfilled')battleData.raids=raids.value;
+  if(events.status==='fulfilled')battleData.events=events.value;
+  if(dex.status==='fulfilled'){
+    const [stats,,,,released,names]=dex.value;
+    const byEnglish=new Map();
+    battleData.forms=stats.filter(row=>eligibleForm(row)&&Object.hasOwn(released,speciesId(row))).map(row=>{
+      const english=clean(row.pokemon_name), korean=names.get(speciesId(row));
+      const label=formLabels[formOf(row)];
+      if(korean&&english)byEnglish.set(english,korean);
+      return {row,english,name:(korean||english)+(label?' ('+label+')':'')};
     });
-    renderCpForms();
-  }).catch(()=>{cpLoad=null;$('cpFormResult').textContent='데이터를 불러오지 못했습니다. 포획 CP 탭을 다시 눌러 주세요.';});
-  return cpLoad;
-}
-function renderCpForms(){
-  const q = clean($('cpFormSearch').value).toLowerCase().replace(/\s/g,'');
-  const select = $('cpForm');
-  select.innerHTML = cpForms.filter(({name,row})=>
-    (name+' '+row.pokemon_name).toLowerCase().replace(/\s/g,'').includes(q)
-  ).map(({index,name})=>'<option value="'+index+'">'+esc(name)+'</option>').join('');
-  select.disabled = !select.options.length;
-  renderCpEstimate();
-}
-function renderCpEstimate(){
-  const row = $('cpForm').disabled ? null : cpForms[Number($('cpForm').value)]?.row;
-  if(!row){$('cpFormResult').textContent='검색 결과가 없습니다.';return;}
-  const normal = encounterMaxCp(row,0.59740001).toLocaleString('ko-KR');
-  const boost = encounterMaxCp(row,0.667934).toLocaleString('ko-KR');
-  $('cpFormResult').textContent = $('catchCpMode').value==='맥스배틀' ?
-    '포획 최고 '+normal+' CP · 날씨 부스트 적용 없음' :
-    '포획 최고 '+normal+' CP · 날씨 부스트 '+boost+' CP';
-}
-$('cpFormSearch').addEventListener('input',renderCpForms);
-$('cpForm').addEventListener('change',renderCpEstimate);
-$('catchCpMode').addEventListener('change',()=>{if(cpForms.length)renderCpEstimate();});
-$('tabCp').addEventListener('click',loadCpForms);
-const scheduleSource='https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/';
-async function loadSchedule() {
-  const button=$('refreshSchedule');
-  if(button.disabled)return;
-  button.disabled=true;$('scheduleStatus').textContent='최신 목록을 확인하는 중…';
-  const [raids,events]=await Promise.allSettled(['raids.json','events.json'].map(name=>
-    getRaidResponse(scheduleSource+name).then(r=>r.json()).then(data=>{
-      if(!Array.isArray(data))throw Error('Invalid schedule');return data;
-    })));
-  if(raids.status==='fulfilled') {
-    $('activeRaids').innerHTML=raids.value.map(row=>{
-      const cp=row.combatPower;
-      const base = Number.isInteger(cp?.normal?.max) ? cp.normal.max.toLocaleString('ko-KR')+' CP' : '확인 불가';
-      const boosted = Number.isInteger(cp?.boosted?.max) ? cp.boosted.max.toLocaleString('ko-KR')+' CP' : '확인 불가';
-      return '<article class="pokemon"><h3>'+esc(row.name)+'</h3><span class="pill">'+esc(row.tier)+'</span><p>기본 '+base+' · 날씨 부스트 '+boosted+'</p></article>';
-    }).join('') || '<p>현재 제공된 레이드가 없습니다.</p>';
+    const escapeRegex=s=>s.replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');
+    battleData.names=[...byEnglish].sort((a,b)=>b[0].length-a[0].length)
+      .map(([english,korean])=>[new RegExp('\\b'+escapeRegex(english)+'\\b','gi'),korean]);
   }
-  if(events.status==='fulfilled'){
-    const now=Date.now();
-    const fmt=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
-    const time=value=>new Date(/^\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?$/.test(value)?value+'+09:00':value);
-    $('eventList').innerHTML=events.value.filter(row=>row.end==null||time(row.end)>now)
-      .sort((a,b)=>time(a.start)-time(b.start)).slice(0,24).map(row=>{
-        const day=time(row.start);
-        return '<li>'+esc(row.name)+(Number.isFinite(day.getTime())?' · '+esc(fmt.format(day)):'')+'</li>';
-      }).join('');
-  }
-  $('scheduleStatus').textContent=raids.status==='fulfilled'&&events.status==='fulfilled'?
-    '최신 목록을 불러왔습니다. · 한국 시간 기준':'일부 일정을 불러오지 못했습니다. 아래 출처에서 확인하실 수 있습니다.';
-  button.disabled=false;
+  $('battleStatus').textContent=battleData.checked?
+    '최신 일정 · 한국 시간 기준':'일부 외부 자료를 불러오지 못했습니다. 배틀 탭을 다시 열면 재시도합니다.';
+  renderBattle();
 }
-$('refreshSchedule').onclick=loadSchedule;
-$('tabSchedule').onclick=()=>{showTab('schedule');loadSchedule();};
+battleSearch.addEventListener('input',renderBattle);
+$('tabBattle').onclick=()=>{showTab('battle');renderBattle();loadBattle();loadCounter();};
 </script></body></html>
-
-
-
-
-
-
-
