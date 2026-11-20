@@ -6,7 +6,7 @@
 .update-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 #rankPanel [hidden]{display:none!important} #rankPanel .pokemon-sprite{width:36px;height:36px}
 #counterPanel [hidden]{display:none!important} #counterPanel .pokemon-sprite{width:36px;height:36px}
-.tabs{flex-wrap:wrap;overflow:visible}.pokemon a{color:#9bceff}#catchCpPanel select,#catchCpPanel input,#raidType{margin-bottom:12px}#updateStatus{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;font-size:13px;margin-left:8px}[hidden]{display:none!important}#battleSearch{width:100%;margin-bottom:6px}.battle-stars{color:#ffce73;font-weight:700;white-space:nowrap}.battle-status{color:#97dec4}.battle-original{margin-top:7px}#battlePanel a{color:#9bceff}#battlePanel section{margin-top:22px}.battle-boss-heading{display:flex;gap:10px;align-items:center}.battle-boss-heading img{width:52px;height:52px;object-fit:contain;flex:none}.battle-boss-heading h3{margin:0}.battle-cp-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.battle-cp-values div{padding:8px;background:#10192d;border-radius:8px}.battle-cp-values dt{font-size:12px;color:#b6c4df}.battle-cp-values dd{margin:3px 0 0;font-weight:700}</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span><details><summary>포켓몬 GO 소식</summary><ul id="newsItems"></ul></details></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">타입별 공격수</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button><button type="button" class="secondary" id="tabBattle">배틀·일정·포획 CP</button></nav>
+.tabs{flex-wrap:wrap;overflow:visible}.pokemon a{color:#9bceff}#catchCpPanel select,#catchCpPanel input,#raidType{margin-bottom:12px}#updateStatus{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;font-size:13px;margin-left:8px}[hidden]{display:none!important}#battleSearch{width:100%;margin-bottom:6px}.battle-stars{color:#ffce73;font-weight:700;white-space:nowrap}.battle-status{color:#97dec4}.battle-original{margin-top:7px}#battlePanel a{color:#9bceff}#battlePanel section{margin-top:22px}.battle-boss-heading{display:flex;gap:10px;align-items:center}.battle-boss-heading img{width:52px;height:52px;object-fit:contain;flex:none}.battle-boss-heading h3{margin:0}.battle-cp-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.battle-cp-values div{padding:8px;background:#10192d;border-radius:8px}.battle-cp-values dt{font-size:12px;color:#b6c4df}.battle-cp-values dd{margin:3px 0 0;font-weight:700}</style></head><body><header><h1>⚡ 나의 레이드 도감</h1><p>보유 포켓몬 등록 · 육성 우선순위 · 진화 판단 · 나란히 비교</p></header><main><section class="stats" aria-label="요약"><div class="stat">보유 개체<strong id="count">0</strong></div><div class="stat">우선 육성<strong id="priority">0</strong></div><div class="stat">비교 선택<strong id="selected">0/3</strong></div></section><section class="panel" id="dailyUpdates" aria-label="자동 업데이트"><button type="button" id="refreshUpdates" class="secondary">지금 다시 확인</button><span id="updateStatus" class="update-status" role="status"></span><details><summary>포켓몬 GO 소식</summary><ul id="newsItems"></ul></details></section><nav class="tabs" aria-label="메뉴"><button type="button" id="tabRanks">레이드 공격수</button><button type="button" id="tabMine" class="secondary">내 도감 등록·비교</button><button type="button" class="secondary" id="tabBattle">배틀·일정·포획 CP</button></nav>
 <section class="panel" id="battlePanel" hidden aria-labelledby="battleTitle">
   <h2 id="battleTitle">배틀·일정·포획 CP</h2>
   <label for="battleSearch">포켓몬·보스·이벤트 검색</label>
@@ -30,7 +30,13 @@
 </section><section id="battleMaxGuide"><h3>맥스배틀 추천</h3><div class="actions"><a href="https://db.pokemongohub.net/best/dynamax-attackers-per-type">18타입 공격수</a><a href="https://db.pokemongohub.net/best/dynamax-tanks-per-type">타입별 탱커</a></div><p class="note">다이월은 피해를 줄이고 다이리커버리는 아군을 회복합니다. 보스별 역할과 기술은 각 포켓몬의 출처에서 확인하실 수 있습니다.</p><div class="cards"><article class="pokemon"><h3>거다이맥스 리자몽</h3><p>불꽃 공격</p><a href="https://db.pokemongohub.net/pokemon/6-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>다이맥스 펄기아</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/484-Dynamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article><article class="pokemon"><h3>거다이맥스 두랄루돈</h3><p>드래곤 공격</p><a href="https://db.pokemongohub.net/pokemon/884-Gigantamax" target="_blank" rel="noopener noreferrer">맥스 기술과 역할 보기</a></article></div></section>
   <p class="small"><a href="https://leekduck.com/events/">Leek Duck 일정</a> · <a href="https://pokemongo.com/news/?hl=ko">Pokémon GO 공식 소식</a></p>
 </section><section class="panel" id="rankPanel">
-    <h2>타입별 레이드 공격수 순위</h2><label for="raidType">18개 공격 타입 중 선택</label><select id="raidType" disabled></select><p id="raidTypeHelp" class="small">선택한 타입의 스페셜 기술 기준입니다. 노말 기술은 같은 타입일 필요가 없습니다.</p><label for="raidForm">공격수 형태</label><select id="raidForm"><option value="">전체 형태</option><option value="normal">일반</option><option value="shadow">그림자</option><option value="mega">메가</option><option value="primal">원시</option></select><label for="raidMetric">정렬 지표</label><select id="raidMetric"><option value="dps">DPS · 초당 피해량</option><option value="tdo">TDO · 기절 전 총 피해량</option></select>
+    <h2>레이드 공격수 순위</h2>
+<div class="actions" role="group" aria-label="공격수 순위 보기">
+  <button type="button" id="raidOverallTab" aria-pressed="true">전체 통합</button>
+  <button type="button" id="raidByTypeTab" class="secondary" aria-pressed="false">타입별</button>
+</div>
+<div id="raidTypeControls" hidden><label for="raidType">18개 공격 타입 중 선택</label><select id="raidType" disabled></select></div>
+<p id="raidTypeHelp" class="small">타입 제한 없이 각 포켓몬의 최적 기술 조합을 비교합니다.</p><label for="raidForm">공격수 형태</label><select id="raidForm"><option value="">전체 형태</option><option value="normal">일반</option><option value="shadow">그림자</option><option value="mega">메가</option><option value="primal">원시</option></select><label for="raidMetric">정렬 지표</label><select id="raidMetric"><option value="dps">DPS · 초당 피해량</option><option value="tdo">TDO · 기절 전 총 피해량</option></select>
     <p class="note">40레벨·15/15/15 기준입니다. 공격은 기준 상대의 방어력 180, 방어는 기준 상대의 공격력 180과 초당 위력 40을 가정합니다. 자속과 그림자 공격·방어 보정, 기술 위력·시간·에너지를 반영합니다. TDO는 DPS × 예상 생존 시간입니다. 실제 레이드에서는 보스 기술·날씨·파티 구성과 회피에 따라 달라집니다. †는 데이터에 등록된 대단한 기술머신 기술입니다. 일반 폼의 출시는 종 단위로 확인되며, 메가 및 원시 폼은 공급처의 데이터 기준입니다.</p>
     <input id="raid500Search" type="search" placeholder="이름으로 검색" aria-label="500위 목록 검색" hidden>
     <p id="raid500Status" role="status"></p><p id="raidSourcesStatus" class="small"></p>
@@ -144,10 +150,26 @@ const raidType = document.getElementById('raidType');
 const raidForm = $('raidForm');
 const raidMetric = $('raidMetric');
 let raidTypes;
+let raidRankingView = 'overall';
+function setRankingView(view) {
+  raidRankingView = view;
+  const byType = view === 'type';
+  $('raidTypeControls').hidden = !byType;
+  $('raidOverallTab').setAttribute('aria-pressed',String(!byType));
+  $('raidByTypeTab').setAttribute('aria-pressed',String(byType));
+  $('raidOverallTab').classList.toggle('secondary',byType);
+  $('raidByTypeTab').classList.toggle('secondary',!byType);
+  $('raidTypeHelp').textContent = byType
+    ? '선택한 타입의 스페셜 기술 기준입니다. 노말 기술은 같은 타입일 필요가 없습니다.'
+    : '타입 제한 없이 각 포켓몬의 최적 기술 조합을 비교합니다.';
+  setRaidType();
+}
+$('raidOverallTab').onclick = () => setRankingView('overall');
+$('raidByTypeTab').onclick = () => setRankingView('type');
 function setRaidType() {
   if (!raidRankData) return;
   rankedRaidSpecies = calculateRaid500(...raidRankData, {
-    chargedType:raidType.value, variant:raidForm.value, metric:raidMetric.value, typesByForm:raidTypes
+    chargedType:raidRankingView === 'type' ? raidType.value : '', variant:raidForm.value, metric:raidMetric.value, typesByForm:raidTypes
   });
   raidLimit = 50;
   showRaid500();
@@ -253,7 +275,7 @@ function showRaid500() {
   const query = raidSearch.value.trim().toLowerCase();
   const filtered = rankedRaidSpecies.filter(row =>
     row.name.toLowerCase().includes(query) || row.english.toLowerCase().includes(query));
-  raidStatus.textContent = (typeNames[raidType.value] || '') + ' 타입 · ' + (rankedRaidSpecies.length ? '' : '표시할 공격수가 없습니다. · ') + '수록 ' + rankedRaidSpecies.length + '개 폼 · 검색 결과 ' + filtered.length + '개';
+  raidStatus.textContent = (raidRankingView === 'type' ? typeNames[raidType.value] + ' 타입' : '전체 통합') + ' · ' + (rankedRaidSpecies.length ? '' : '표시할 공격수가 없습니다. · ') + '수록 ' + rankedRaidSpecies.length + '개 폼 · 검색 결과 ' + filtered.length + '개';
   raidList.innerHTML = filtered.slice(0,raidLimit).map(row =>
     `<article class="rank-item"><div class="rank-number">${row.rank}</div><div><img class="pokemon-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${row.sprite}.png" width="36" height="36" loading="lazy" decoding="async" alt="" onerror="if(this.dataset.fallback){this.hidden=true}else{this.dataset.fallback=1;this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${row.id}.png'}"><strong>${esc(row.name)}</strong><div class="small">DPS ${row.dps.toFixed(2)} · TDO ${Math.round(row.tdo)}<br>${esc(row.fastName)}${row.eliteFast?'†':''} / ${esc(row.chargedName)}${row.eliteCharged?'†':''}</div></div><button type="button" data-raid-name="${esc(row.name)}">등록</button></article>`
   ).join('');
